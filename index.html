@@ -122,11 +122,24 @@ button{font:inherit}.type,.choice,.primary,.secondary{border-radius:14px;border:
 .lesson-card-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
 @media(max-width:700px){.diff-grid{grid-template-columns:1fr}}
 @media print{
- body *{visibility:hidden!important}
- #printLessonCard,#printLessonCard *{visibility:visible!important}
- #printLessonCard{position:absolute;left:0;top:0;width:100%;padding:18mm;box-sizing:border-box;background:#fff}
- #printLessonCard button,#printLessonCard .no-print{display:none!important}
- #printLessonCard .diff-grid{grid-template-columns:repeat(3,1fr)}
+ body:not(.lesson-card-print) #start,
+ body:not(.lesson-card-print) #quiz,
+ body:not(.lesson-card-print) #lessonPrep,
+ body:not(.lesson-card-print) #printLessonCard,
+ body:not(.lesson-card-print) .public-footer,
+ body:not(.lesson-card-print) .public-intro,
+ body:not(.lesson-card-print) .no-print{display:none!important}
+
+ body.lesson-card-print *{visibility:hidden!important}
+ body.lesson-card-print #printLessonCard,
+ body.lesson-card-print #printLessonCard *{visibility:visible!important}
+ body.lesson-card-print #printLessonCard{
+   position:absolute;left:0;top:0;width:100%;
+   padding:18mm;box-sizing:border-box;background:#fff
+ }
+ body.lesson-card-print #printLessonCard button,
+ body.lesson-card-print #printLessonCard .no-print{display:none!important}
+ body.lesson-card-print #printLessonCard .diff-grid{grid-template-columns:repeat(3,1fr)}
 }
 
 .public-intro{max-width:760px;margin:4px auto 22px;text-align:center}
@@ -135,6 +148,26 @@ button{font:inherit}.type,.choice,.primary,.secondary{border-radius:14px;border:
 .public-footer{margin:34px auto 12px;padding:18px 20px;border-top:1px solid var(--line);max-width:900px;font-size:12.5px;line-height:1.55;color:var(--muted)}
 .public-footer strong{color:var(--text)}
 @media print{.public-footer,.public-intro{display:none!important}}
+
+.activity-bank{margin-top:16px}
+.activity-card{border:1px solid var(--line);border-radius:12px;background:#fff;padding:14px 16px;margin:10px 0}
+.activity-card label{display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+.activity-card input{margin-top:4px;transform:scale(1.12)}
+.activity-title{font-weight:700}
+.activity-tags{display:flex;gap:6px;flex-wrap:wrap;margin:7px 0}
+.activity-tag{font-size:11px;border:1px solid var(--line);border-radius:999px;padding:2px 7px;background:#f7fafc}
+.activity-how{font-size:13.5px;line-height:1.5;margin-top:6px}
+.activity-source{font-size:11.5px;color:var(--muted);margin-top:7px}
+.activity-controls{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+
+.diff-route{border:1px solid var(--line);border-radius:14px;padding:15px 16px;margin:14px 0;background:#fff}
+.diff-route h5{margin:0 0 5px;font-size:16px}
+.diff-route-intro{font-size:13px;color:var(--muted);line-height:1.45;margin:0 0 10px}
+.diff-route .activity-card{margin:8px 0;background:#fbfcfe}
+.diff-route.support{border-left:5px solid #d39b32}
+.diff-route.base{border-left:5px solid #4f8fbd}
+.diff-route.challenge{border-left:5px solid #6f65a8}
+.route-count{font-size:12px;font-weight:700;border-radius:999px;padding:3px 7px;background:#f1f4f7;margin-left:6px}
 </style>
 </head>
 <body><main class="wrap">
@@ -210,7 +243,7 @@ button{font:inherit}.type,.choice,.primary,.secondary{border-radius:14px;border:
 <div class="actions no-print"><button id="restart" class="secondary">Opnieuw beginnen</button><button id="saveAnalysis" class="secondary" type="button">Analyse opslaan</button><button onclick="window.print()" class="primary">Resultaat afdrukken / PDF</button></div>
 </section>
 
-<div id="lessonPrep" class="lesson-prep">
+<div id="lessonPrep" class="lesson-prep hidden">
   <h3>Maak mijn lesvoorbereiding</h3>
   <p class="muted">De tool stelt doelen voor op basis van de analyse. Jij kiest welke doelen je echt wilt gebruiken.</p>
   <div id="selectableGoals"></div>
@@ -227,7 +260,7 @@ button{font:inherit}.type,.choice,.primary,.secondary{border-radius:14px;border:
 
 <footer class="public-footer">
   <strong>Bronnen en toelichting</strong><br>
-  TekstWijzer is een onafhankelijke praktische uitwerking voor onderwijsgebruik. De kwalitatieve beoordeling van tekstcomplexiteit is gebaseerd op analysecriteria uit <em>Close Reading. Werken aan dieper tekstbegrip in het basisonderwijs</em> (Uitgeverij Pica, 2018). De gebruikte numerieke score, gemiddelde score, grenswaarden, signaleringen en gegenereerde lesadviezen zijn praktische keuzes binnen TekstWijzer en maken geen deel uit van het oorspronkelijke analyseformulier. De koppeling aan onderwijsdoelen is gebaseerd op de blokplanning Leesonderwijs van de PWA. TekstWijzer is geen officiële tool van Uitgeverij Pica.
+  TekstWijzer is een onafhankelijke praktische uitwerking voor onderwijsgebruik. De kwalitatieve beoordeling van tekstcomplexiteit is gebaseerd op analysecriteria uit <em>Close Reading. Werken aan dieper tekstbegrip in het basisonderwijs</em> (Uitgeverij Pica, 2018). De gebruikte numerieke score, gemiddelde score, grenswaarden, signaleringen en gegenereerde lesadviezen zijn praktische keuzes binnen TekstWijzer en maken geen deel uit van het oorspronkelijke analyseformulier. De koppeling aan onderwijsdoelen is gebaseerd op de blokplanning Leesonderwijs van de PWA. TekstWijzer is geen officiële tool van Uitgeverij Pica. De activiteitenbank gebruikt daarnaast evidence-informed leesstrategieën uit onder meer de IES/What Works Clearinghouse Practice Guide <em>Providing Reading Interventions for Students in Grades 4–9</em>, onderzoek naar Reciprocal Teaching (Palincsar &amp; Brown, 1984) en praktische differentiatievormen zoals tiered assignments en choice boards. De concrete Nederlandse uitvoeringsbeschrijvingen zijn door TekstWijzer geformuleerd.
 </footer>
 
 </main>
@@ -284,7 +317,7 @@ function showResult(){
  if(avg<=1.66){level="Gemakkelijke tekst";cls="easy";explain="De meeste kenmerken van deze tekst vallen aan de gemakkelijke kant van het profiel."}
  else if(avg<=2.33){level="Gemiddelde tekst";cls="mid";explain="De tekst heeft een gemengd complexiteitsprofiel. Bekijk hieronder welke onderdelen extra leesinspanning vragen."}
  else{level="Moeilijke tekst";cls="hard";explain="Meerdere kenmerken dragen sterk bij aan de complexiteit. Bekijk hieronder waar de grootste leesuitdagingen zitten."}
- $("quiz").classList.add("hidden");$("result").style.display="block";$("total").textContent=avg.toFixed(2).replace(".",",");
+ $("quiz").classList.add("hidden");$("result").style.display="block";$("lessonPrep").classList.remove("hidden");$("total").textContent=avg.toFixed(2).replace(".",",");
  $("scaleMarker").style.left=((avg-1)/2*100)+"%";
  $("resultType").textContent=type==="info"?"Informatieve tekst":"Verhalende tekst";
  const title=$("textTitle").value.trim(), author=$("author").value.trim();
@@ -308,9 +341,8 @@ function showResult(){
    const box=$("profileHelp"+btn.dataset.help); box.classList.toggle("hidden");
  }));
  renderTeacherAdvice();
- $("rows").innerHTML=data[type].map((x,i)=>`<tr><td>${x.name}</td><td><strong>${answers[i]}</strong> · ${["","Gemakkelijk","Gemiddeld","Moeilijk"][answers[i]]}</td></tr>`).join("");
 }
-$("restart").onclick=()=>{type=null;step=0;answers=Array(8).fill(null);$("result").style.display="none";$("start").classList.remove("hidden");$("metaForm").classList.add("hidden");$("textTitle").value="";$("author").value="";document.querySelectorAll(".type").forEach(x=>x.classList.remove("active"))};
+$("restart").onclick=()=>{type=null;step=0;answers=Array(8).fill(null);$("result").style.display="none";$("lessonPrep").classList.add("hidden");$("printLessonCard").innerHTML="";$("start").classList.remove("hidden");$("metaForm").classList.add("hidden");$("textTitle").value="";$("author").value="";document.querySelectorAll(".type").forEach(x=>x.classList.remove("active"))};
 
 const helpText={
  info:[
@@ -613,9 +645,10 @@ function renderLessonPlan(chosen){
 let selectedFocusGoalIndexes=[];
 
 function currentChosenAspects(){
- const type=$("textType")?.value||"informative";
- const aspects=type==="narrative"?narrativeAspects:informativeAspects;
- return aspects.map((a,i)=>({name:a.name,score:answers[i]||0})).filter(x=>x.score>=2).sort((a,b)=>b.score-a.score);
+ const aspects=(type && data[type]) ? data[type] : [];
+ return aspects.map((a,i)=>({name:a.name,score:answers[i]||0}))
+   .filter(x=>x.score>=2)
+   .sort((a,b)=>b.score-a.score);
 }
 function proposedGoalIndexes(){
  const g=$("groupSelect")?.value||"5";
@@ -652,18 +685,119 @@ function makeLessonGoal(){
  ];
  return {goal,criteria,names};
 }
-function differentiationText(){
- const chosen=currentChosenAspects(), top=chosen[0]?.name||"tekstbegrip";
- return {
- support:`Maak ${top.toLowerCase()} toegankelijker: modelleer één voorbeeld, werk in kleine stappen, bespreek noodzakelijke woorden of voorkennis vooraf en laat leerlingen eerst samen of mondeling antwoorden.`,
- base:`Laat leerlingen de kernopdracht uitvoeren met de tekst erbij. Vraag hen hun antwoord uit te leggen en terug te wijzen naar de tekst.`,
- challenge:`Laat leerlingen een diepere afleiding maken, meerdere tekstgedeelten verbinden, een eigen vraag met tekstbewijs maken of hun antwoord vergelijken en beargumenteren.`
+
+const activityBank=[
+ {id:"preteach_vocab",title:"Pre-teaching woordenschat",levels:["support"],groups:[4,5,6,7,8],purposes:["close","vocabulary","world","comprehension"],aspects:["Woordenschat","Kennisniveau"],source:"IES/WWC – world & word knowledge",how:"Kies vóór de les 3–5 woorden die noodzakelijk zijn om de tekst te begrijpen. Geef een korte betekenis, een voorbeeld en waar mogelijk een afbeelding. Laat leerlingen het woord mondeling in een nieuwe zin gebruiken voordat zij gaan lezen."},
+ {id:"preteach_knowledge",title:"Pre-teaching voorkennis",levels:["support"],groups:[4,5,6,7,8],purposes:["close","world","comprehension"],aspects:["Kennisniveau"],source:"IES/WWC – world knowledge",how:"Geef vóór het lezen alleen de achtergrondkennis die nodig is om de tekst te kunnen volgen. Gebruik 2–4 kernfeiten, een foto, kaart, voorwerp of eenvoudig schema. Laat leerlingen daarna in eigen woorden vertellen wat zij nu al over het onderwerp weten."},
+ {id:"concept_map",title:"Begrippenweb vooraf",levels:["support","base"],groups:[4,5,6],purposes:["world","vocabulary","close"],aspects:["Kennisniveau","Woordenschat","Relaties tussen ideeën"],source:"Graphic/semantic organizers",how:"Schrijf het centrale onderwerp in het midden. Voeg samen bekende begrippen toe en trek lijnen tussen begrippen die bij elkaar horen. Vul het web na het lezen met een andere kleur aan met nieuwe kennis."},
+ {id:"context_clues",title:"Betekenis uit de context afleiden",levels:["base","challenge"],groups:[5,6,7,8],purposes:["vocabulary","close","comprehension"],aspects:["Woordenschat"],source:"IES/WWC – word knowledge & comprehension",how:"Markeer een onbekend woord. Lees de zin én de zin ervoor/erna. Onderstreep aanwijzingen, formuleer een mogelijke betekenis en lees de zin opnieuw om te controleren of die betekenis past."},
+ {id:"word_morph",title:"Woorddelen onderzoeken",levels:["base","challenge"],groups:[5,6,7,8],purposes:["vocabulary","world"],aspects:["Woordenschat"],source:"IES/WWC – word knowledge",how:"Laat leerlingen een moeilijk woord opdelen in herkenbare delen, zoals voorvoegsel, stam en achtervoegsel. Laat hen op basis daarvan een betekenis voorspellen en die vervolgens in de tekst controleren."},
+ {id:"gist",title:"Gist per tekstdeel",levels:["support","base"],groups:[4,5,6,7,8],purposes:["close","world","comprehension"],aspects:["Betekenis","Organisatie","Relaties tussen ideeën"],source:"IES/WWC – gist routine",how:"Stop na een korte passage. Vraag: Over wie of wat gaat dit stukje? Wat is het belangrijkste dat hierover wordt gezegd? Formuleer samen of zelfstandig één korte kernzin."},
+ {id:"one_sentence",title:"Eén kernzin per alinea",levels:["base"],groups:[4,5,6,7,8],purposes:["close","world","comprehension"],aspects:["Betekenis","Organisatie"],source:"Samenvatten / gist",how:"Na iedere alinea schrijft de leerling één zin die alleen de belangrijkste informatie bevat. Aan het einde worden de kernzinnen gebruikt om de hele tekst samen te vatten."},
+ {id:"story_map",title:"Verhaalkaart",levels:["support","base"],groups:[4,5,6],purposes:["close","comprehension"],aspects:["Organisatie","Relaties tussen ideeën/karakters","Betekenis"],source:"Graphic organizers",how:"Vul tijdens of na het lezen vaste vakken in: wie – waar – probleem – belangrijke gebeurtenissen – oplossing/afloop. Laat de leerling daarna het verhaal navertellen met alleen de kaart als steun."},
+ {id:"sequence_cards",title:"Gebeurtenissen op volgorde",levels:["support"],groups:[4,5],purposes:["close","comprehension"],aspects:["Organisatie","Relaties tussen ideeën/karakters"],source:"Graphic organizers / story structure",how:"Schrijf of geef 4–6 belangrijke gebeurtenissen op losse kaartjes. Leerlingen leggen ze in de juiste volgorde en wijzen bij elk kaartje aan waar zij dit in de tekst terugvinden."},
+ {id:"cause_effect",title:"Oorzaak-gevolgketting",levels:["support","base"],groups:[4,5,6,7,8],purposes:["world","close","comprehension"],aspects:["Relaties tussen ideeën","Relaties tussen ideeën/karakters"],source:"Graphic organizers",how:"Maak twee kolommen: 'Dit gebeurt' en 'omdat…'. Laat leerlingen minimaal twee verbanden uit de tekst invullen en elk verband met een zin of passage uit de tekst controleren."},
+ {id:"compare",title:"Vergelijkingsschema",levels:["base"],groups:[4,5,6,7,8],purposes:["world","close","comprehension"],aspects:["Relaties tussen ideeën"],source:"Graphic organizers",how:"Zet twee begrippen, personen of situaties naast elkaar. Noteer overeenkomsten en verschillen en laat leerlingen bij minimaal één verschil tekstbewijs aanwijzen."},
+ {id:"right_there",title:"Letterlijk-vindbare vragen",levels:["support"],groups:[4,5,6],purposes:["comprehension","world"],aspects:["Betekenis","Kennisniveau"],source:"Question-answering practice",how:"Stel eerst 2–3 vragen waarvan het antwoord letterlijk in één zin of passage staat. Laat de leerling het antwoord én de bewijszin aanwijzen voordat hij antwoordt."},
+ {id:"think_search",title:"Informatie uit meerdere stukken combineren",levels:["base","challenge"],groups:[5,6,7,8],purposes:["close","world","comprehension"],aspects:["Betekenis","Relaties tussen ideeën"],source:"IES/WWC – ask & answer questions",how:"Stel een vraag waarvoor informatie uit minstens twee zinnen of alinea’s nodig is. Laat leerlingen beide bewijsplaatsen markeren en daarna één gecombineerd antwoord formuleren."},
+ {id:"author_me",title:"Tekst + eigen kennis verbinden",levels:["challenge"],groups:[6,7,8],purposes:["close","world","comprehension"],aspects:["Betekenis","Bedoeling van de schrijver","Kennisniveau"],source:"Question-answering / inference",how:"Geef een vraag die niet letterlijk beantwoord wordt. Leerlingen noteren eerst wat de tekst zegt, daarna welke voorkennis zij gebruiken en formuleren vervolgens hun conclusie."},
+ {id:"reciprocal",title:"Reciprocal teaching",levels:["base","challenge"],groups:[5,6,7,8],purposes:["close","comprehension"],aspects:["Betekenis","Woordenschat","Organisatie"],source:"Palincsar & Brown (1984)",how:"Werk in groepjes met vier rollen: voorspeller, vragensteller, verduidelijker en samenvatter. Lees een kort tekstdeel; ieder voert zijn rol uit. Wissel daarna de rollen."},
+ {id:"monitor",title:"Stop–check–herstel",levels:["support","base"],groups:[4,5,6,7,8],purposes:["close","comprehension"],aspects:["Betekenis","Woordenschat","Kennisniveau"],source:"IES/WWC – comprehension monitoring",how:"Stop op vooraf gekozen plekken. Leerlingen geven aan: groen = ik begrijp het, oranje = twijfel, rood = ik ben de draad kwijt. Bij oranje/rood kiezen zij één herstelactie: herlezen, moeilijk woord oplossen, vorige alinea samenvatten of een vraag stellen."},
+ {id:"teacher_think",title:"Hardop denkend voordoen",levels:["support"],groups:[4,5,6,7,8],purposes:["close","world","comprehension","vocabulary"],aspects:["Betekenis","Woordenschat","Relaties tussen ideeën","Stijl van de schrijver"],source:"Explicit modeling / comprehension instruction",how:"Lees één moeilijke passage hardop en verwoord letterlijk je denkstappen: wat valt op, wat begrijp je nog niet, welke aanwijzing gebruik je en hoe controleer je je conclusie. Laat leerlingen daarna dezelfde stappen bij een nieuwe passage uitvoeren."},
+ {id:"sentence_unpack",title:"Moeilijke zin uitpakken",levels:["support","base"],groups:[4,5,6,7,8],purposes:["close","comprehension"],aspects:["Stijl van de schrijver","Betekenis"],source:"Close reading / explicit comprehension support",how:"Kies één lange of ingewikkelde zin. Omcirkel wie/wat, onderstreep wat er gebeurt en verbind verwijswoorden met het woord waarnaar ze verwijzen. Laat leerlingen de zin daarna in eenvoudigere woorden zeggen."},
+ {id:"reference_words",title:"Verwijswoorden verbinden",levels:["support","base"],groups:[4,5,6,7],purposes:["close","comprehension"],aspects:["Stijl van de schrijver","Relaties tussen ideeën"],source:"Comprehension strategy instruction",how:"Markeer woorden als hij, zij, deze, dit, daardoor en daarom. Trek een pijl naar het woord, de persoon of de gebeurtenis waarnaar het verwijst. Lees daarna de zin opnieuw."},
+ {id:"text_structure",title:"Tekststructuur zichtbaar maken",levels:["base"],groups:[5,6,7,8],purposes:["world","close","comprehension"],aspects:["Organisatie","Relaties tussen ideeën"],source:"Graphic organizers / text structure",how:"Bepaal welke structuur overheerst: volgorde, oorzaak-gevolg, probleem-oplossing, vergelijking of beschrijving. Zet de informatie vervolgens in een passend schema."},
+ {id:"headings",title:"Tussenkopjes bedenken",levels:["base","challenge"],groups:[4,5,6,7,8],purposes:["world","close","comprehension"],aspects:["Organisatie","Betekenis"],source:"Main idea / summarizing",how:"Laat leerlingen na elke alinea een tussenkopje van maximaal 3–5 woorden bedenken. Laat ze daarna uitleggen waarom dat kopje de kern van de alinea weergeeft."},
+ {id:"paragraph_puzzle",title:"Alineapuzzel",levels:["challenge"],groups:[5,6,7,8],purposes:["close","world","comprehension"],aspects:["Organisatie","Relaties tussen ideeën"],source:"Text structure practice",how:"Geef enkele alinea’s of kernzinnen in een andere volgorde. Leerlingen bepalen een logische volgorde en onderbouwen die met signaalwoorden, verwijswoorden en inhoudelijke verbanden."},
+ {id:"evidence_hunt",title:"Tekstbewijs-jacht",levels:["base","challenge"],groups:[4,5,6,7,8],purposes:["close","comprehension","world"],aspects:["Betekenis","Bedoeling van de schrijver","Relaties tussen ideeën/karakters"],source:"Close reading / question answering",how:"Geef een bewering of conclusie. Leerlingen zoeken de sterkste zin of passage die deze ondersteunt, markeren die en leggen uit waarom juist dit bewijs past."},
+ {id:"two_evidence",title:"Twee bewijsplaatsen verbinden",levels:["challenge"],groups:[6,7,8],purposes:["close","comprehension"],aspects:["Betekenis","Bedoeling van de schrijver","Relaties tussen ideeën"],source:"Inference / stretch text",how:"Laat leerlingen een conclusie formuleren die alleen mogelijk is door twee verschillende passages te combineren. Beide passages moeten worden aangewezen en de verbinding moet mondeling of schriftelijk worden uitgelegd."},
+ {id:"author_purpose",title:"Schrijversbedoeling bewijzen",levels:["base","challenge"],groups:[5,6,7,8],purposes:["close","comprehension"],aspects:["Bedoeling van de schrijver","Stijl van de schrijver"],source:"Text analysis",how:"Laat leerlingen kiezen wat de schrijver vooral wil bereiken, maar accepteer het antwoord alleen met twee aanwijzingen uit woordkeuze, voorbeelden, opbouw, titel of formulering."},
+ {id:"perspective",title:"Perspectiefwissel",levels:["challenge"],groups:[6,7,8],purposes:["close"],aspects:["Stijl van de schrijver","Relaties tussen ideeën/karakters","Bedoeling van de schrijver"],source:"Tiered assignment / literary response",how:"Laat een korte passage herschrijven vanuit een ander personage of perspectief. Daarna benoemt de leerling welke informatie, toon of betekenis hierdoor verandert."},
+ {id:"character_motive",title:"Motief van een personage",levels:["base","challenge"],groups:[5,6,7,8],purposes:["close","comprehension"],aspects:["Relaties tussen ideeën/karakters","Betekenis"],source:"Inference / literary comprehension",how:"Kies een belangrijke handeling. Leerlingen beantwoorden: Wat doet het personage? Waarom waarschijnlijk? Welk tekstbewijs ondersteunt dat? Wat is een andere mogelijke verklaring?"},
+ {id:"stretch_chunk",title:"Uitdagende passage in kleine stukken",levels:["support","base"],groups:[4,5,6,7,8],purposes:["close","world","comprehension"],aspects:["Betekenis","Stijl van de schrijver","Kennisniveau"],source:"IES/WWC – stretch text",how:"Vervang de moeilijke tekst niet meteen. Knip één uitdagende passage op in korte delen, lees elk deel doelgericht en bespreek per deel één betekenisvraag. Bouw de delen daarna weer samen tot de volledige betekenis."},
+ {id:"student_questions",title:"Leerlingen maken zelf tekstvragen",levels:["base","challenge"],groups:[5,6,7,8],purposes:["close","world","comprehension"],aspects:["Betekenis","Relaties tussen ideeën","Bedoeling van de schrijver"],source:"IES/WWC – ask & answer questions",how:"Laat iedere leerling één letterlijke en één denk-vraag over de passage maken. Een maatje beantwoordt beide en wijst aan welk tekstbewijs nodig was."},
+ {id:"choice_board",title:"Keuzebord voor verwerking",levels:["base","challenge"],groups:[5,6,7,8],purposes:["world","close","comprehension"],aspects:["Betekenis","Kennisniveau"],source:"Differentiated instruction – choice boards",how:"Bied 3–4 manieren om hetzelfde lesdoel te tonen, bijvoorbeeld kernschema, korte uitleg, vragen maken of visuele samenvatting. Houd het inhoudelijke doel en de eisen aan tekstbewijs gelijk."},
+ {id:"tiered",title:"Gelaagde opdracht met hetzelfde doel",levels:["support","base","challenge"],groups:[4,5,6,7,8],purposes:["world","close","comprehension"],aspects:["Betekenis","Organisatie","Relaties tussen ideeën"],source:"Differentiated instruction – tiered assignments",how:"Laat alle leerlingen aan hetzelfde leesdoel werken, maar varieer de taak: ondersteuning krijgt een deels ingevuld schema en gerichte bewijsplaatsen; basis vult zelfstandig in; uitdaging combineert meerdere passages en motiveert keuzes."}
+];
+
+let selectedActivityIds=[];
+
+function currentPurpose(){
+ return $("lessonPurpose")?.value || "close";
+}
+function scoreActivity(a){
+ const g=Number($("groupSelect")?.value||5), purpose=currentPurpose(), chosen=currentChosenAspects();
+ const hard=chosen.filter(x=>x.score===3).map(x=>x.name), mid=chosen.filter(x=>x.score===2).map(x=>x.name);
+ let score=0;
+ if(a.groups.includes(g)) score+=4; else return -999;
+ if(a.purposes.includes(purpose)) score+=4;
+ a.aspects.forEach(x=>{if(hard.includes(x))score+=6; else if(mid.includes(x))score+=3;});
+ if(purpose==="vocabulary" && a.aspects.includes("Woordenschat")) score+=4;
+ if(purpose==="world" && (a.aspects.includes("Kennisniveau")||a.aspects.includes("Relaties tussen ideeën"))) score+=3;
+ if(purpose==="close" && (a.aspects.includes("Betekenis")||a.aspects.includes("Bedoeling van de schrijver"))) score+=2;
+ return score;
+}
+function suggestedActivities(){
+ return [...activityBank].map(a=>({...a,_score:scoreActivity(a)}))
+   .filter(a=>a._score>-999).sort((a,b)=>b._score-a._score).slice(0,10);
+}
+function renderActivityBank(reset=false){
+ const box=$("differentiation"); if(!box)return;
+ const acts=suggestedActivities();
+ if(reset || !selectedActivityIds.length) selectedActivityIds=acts.slice(0,4).map(a=>a.id);
+ const routeInfo={
+  support:{title:"Instructiegevoelige groep",cls:"support",intro:"Voor leerlingen die het lesdoel nog niet zelfstandig met deze tekst kunnen bereiken. De tekst blijft centraal staan, maar je maakt de toegang makkelijker met pre-teaching, modelleren, kleinere stappen, visuele steun of gerichte tekstplaatsen."},
+  base:{title:"Basisgroep",cls:"base",intro:"Voor leerlingen die met de gewone instructie aan het gekozen lesdoel kunnen werken. Zij verwerken de tekst grotendeels zelfstandig of samen en moeten hun begrip steeds aan de tekst koppelen."},
+  challenge:{title:"Uitdaging",cls:"challenge",intro:"Voor leerlingen die het basisdoel al vlot aankunnen. Zij krijgen niet simpelweg méér werk, maar een diepere taak: afleiden, meerdere tekstgedeelten verbinden, alternatieven afwegen, zelf vragen maken of keuzes met tekstbewijs onderbouwen."}
  };
+ const routeOrder=["support","base","challenge"];
+ function cardsFor(level){
+   let arr=acts.filter(a=>a.levels.includes(level));
+   // Ensure each route gets useful options even when top-10 ranking is skewed.
+   if(arr.length<3){
+     const extras=[...activityBank].map(a=>({...a,_score:scoreActivity(a)}))
+       .filter(a=>a._score>-999 && a.levels.includes(level) && !arr.some(x=>x.id===a.id))
+       .sort((x,y)=>y._score-x._score);
+     arr=arr.concat(extras).slice(0,5);
+   } else arr=arr.slice(0,5);
+   return arr;
+ }
+ box.innerHTML=`<div class="activity-bank"><h4>Differentiatie & werkvormen</h4>
+ <p class="muted"><strong>Kies per doelgroep.</strong> Dezelfde tekst en hetzelfde lesdoel blijven het uitgangspunt; de ondersteuning of verdieping verandert. De voorstellen hieronder zijn geselecteerd op basis van groep, lesdoel en complexiteitsprofiel.</p>
+ <div class="activity-controls"><button type="button" id="selectSuggested">Kies automatisch een startset</button><button type="button" id="clearActivities">Wis selectie</button></div>
+ ${routeOrder.map(level=>{
+   const info=routeInfo[level], arr=cardsFor(level);
+   return `<section class="diff-route ${info.cls}"><h5>${info.title}<span class="route-count">${arr.length} ideeën</span></h5><p class="diff-route-intro">${info.intro}</p>
+   ${arr.map(a=>`<div class="activity-card"><label><input type="checkbox" class="activityCheck" value="${a.id}" ${selectedActivityIds.includes(a.id)?"checked":""}><span><span class="activity-title">${a.title}</span><span class="activity-tags"><span class="activity-tag">${a.aspects.slice(0,2).join(" · ")}</span><span class="activity-tag">groep ${Math.min(...a.groups)}–${Math.max(...a.groups)}</span></span><span class="activity-how">${a.how}</span><span class="activity-source">Bron/richting: ${a.source}</span></span></label></div>`).join("")}</section>`;
+ }).join("")}
+ </div>`;
+ document.querySelectorAll(".activityCheck").forEach(el=>el.addEventListener("change",()=>{
+   selectedActivityIds=[...new Set([...document.querySelectorAll(".activityCheck:checked")].map(x=>x.value))]; buildPrintableLessonCard();
+ }));
+ $("selectSuggested")?.addEventListener("click",()=>{
+   const picks=[];
+   routeOrder.forEach(level=>{
+     const arr=cardsFor(level);
+     if(arr[0]) picks.push(arr[0].id);
+   });
+   selectedActivityIds=[...new Set(picks)];
+   renderActivityBank(); buildPrintableLessonCard();
+ });
+ $("clearActivities")?.addEventListener("click",()=>{selectedActivityIds=[];document.querySelectorAll(".activityCheck").forEach(x=>x.checked=false);buildPrintableLessonCard();});
+}
+function selectedActivitiesHtml(){
+ const routeInfo={support:"Instructiegevoelige groep",base:"Basisgroep",challenge:"Uitdaging"};
+ const selected=activityBank.filter(a=>selectedActivityIds.includes(a.id));
+ if(!selected.length)return "<p>Geen differentiatie-activiteiten geselecteerd.</p>";
+ return ["support","base","challenge"].map(level=>{
+   const arr=selected.filter(a=>a.levels.includes(level));
+   return arr.length?`<h3>${routeInfo[level]}</h3><ul>${arr.map(a=>`<li><strong>${a.title}</strong> — ${a.how}</li>`).join("")}</ul>`:"";
+ }).join("");
 }
 function renderLessonPreparation(){
- const info=makeLessonGoal(), d=differentiationText();
+ const info=makeLessonGoal();
  $("generatedLessonGoal").innerHTML=`<h4>Lesdoel</h4><p><strong>${info.goal}</strong></p><h4>Succescriteria</h4><ul class="success-list">${info.criteria.map(x=>`<li>${x}</li>`).join("")}</ul>`;
- $("differentiation").innerHTML=`<h4>Differentiatie</h4><div class="diff-grid"><div class="diff-card"><strong>Extra ondersteuning</strong>${d.support}</div><div class="diff-card"><strong>Basis</strong>${d.base}</div><div class="diff-card"><strong>Extra uitdaging</strong>${d.challenge}</div></div>`;
+ renderActivityBank();
  buildPrintableLessonCard();
 }
 function buildPrintableLessonCard(){
@@ -671,7 +805,7 @@ function buildPrintableLessonCard(){
  const title=$("title")?.value||$("textTitle")?.value||"Onbenoemde tekst";
  const author=$("author")?.value||$("textAuthor")?.value||"";
  const purpose=$("lessonPurpose")?.options[$("lessonPurpose").selectedIndex]?.text||"";
- const info=makeLessonGoal(), d=differentiationText();
+ const info=makeLessonGoal();
  const selected=selectedFocusGoalIndexes.map(i=>goals[i]).filter(Boolean);
  const aspects=currentChosenAspects().slice(0,3);
  const notes=$("teacherNotes")?.value||"";
@@ -681,11 +815,11 @@ function buildPrintableLessonCard(){
  <h2>Lesdoel</h2><p><strong>${info.goal}</strong></p>
  <h2>Succescriteria</h2><ul>${info.criteria.map(x=>`<li>${x}</li>`).join("")}</ul>
  <h2>Aanpak</h2>${$("lessonPlan")?.innerHTML||""}
- <h2>Differentiatie</h2><div class="diff-grid"><div class="diff-card"><strong>Extra ondersteuning</strong>${d.support}</div><div class="diff-card"><strong>Basis</strong>${d.base}</div><div class="diff-card"><strong>Extra uitdaging</strong>${d.challenge}</div></div>
+ <h2>Differentiatie & werkvormen</h2>${selectedActivitiesHtml()}
  ${notes?`<h2>Notities voor mijn les</h2><p>${notes.replace(/\n/g,"<br>")}</p>`:""}</div>`;
 }
 function saveAnalysis(){
- const payload={version:1,type,title:$("textTitle").value.trim(),author:$("author").value.trim(),answers,score:answers.reduce((a,b)=>a+b,0)/answers.length,group:$("groupSelect")?$("groupSelect").value:"5",lessonPurpose:$("lessonPurpose")?$("lessonPurpose").value:"close",savedAt:new Date().toISOString()};
+ const payload={version:25,type,title:$("textTitle").value.trim(),author:$("author").value.trim(),answers,score:answers.reduce((a,b)=>a+b,0)/answers.length,group:$("groupSelect")?$("groupSelect").value:"5",lessonPurpose:$("lessonPurpose")?$("lessonPurpose").value:"close",savedAt:new Date().toISOString()};
  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
  const a=document.createElement("a");a.href=URL.createObjectURL(blob);
  a.download=(payload.title||"tekstanalyse").replace(/[^\w\-]+/g,"_")+".json";a.click();URL.revokeObjectURL(a.href);
@@ -707,10 +841,16 @@ if($("longAdvice")) $("longAdvice").addEventListener("click",()=>{adviceMode="lo
 if($("groupSelect")) $("groupSelect").addEventListener("change",()=>{if(!$("result").classList.contains("hidden"))renderTeacherAdvice();});
 if($("lessonPurpose")) $("lessonPurpose").addEventListener("change",()=>{if(!$("result").classList.contains("hidden"))renderTeacherAdvice();});
 
+window.addEventListener("afterprint",()=>document.body.classList.remove("lesson-card-print"));
 document.addEventListener("DOMContentLoaded",()=>{
  const make=$("makeLessonCard"), print=$("printLessonCardBtn"), notes=$("teacherNotes");
  if(make) make.addEventListener("click",()=>{renderLessonPreparation();});
- if(print) print.addEventListener("click",()=>{buildPrintableLessonCard();window.print();});
+ if(print) print.addEventListener("click",()=>{
+   buildPrintableLessonCard();
+   document.body.classList.add("lesson-card-print");
+   window.print();
+   setTimeout(()=>document.body.classList.remove("lesson-card-print"),300);
+ });
  if(notes) notes.addEventListener("input",buildPrintableLessonCard);
 });
 </script></body></html>
