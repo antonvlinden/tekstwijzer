@@ -1,0 +1,716 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TekstWijzer</title>
+<style>
+:root{--ink:#17324d;--muted:#627286;--bg:#f5f8fb;--card:#fff;--accent:#0797a5;--line:#d9e3ea;--easy:#edf8f0;--mid:#fff7dd;--hard:#fff0ef}
+*{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.wrap{max-width:940px;margin:auto;padding:24px}.hero{padding:26px 0 12px}.hero h1{font-size:clamp(28px,5vw,44px);margin:0 0 8px}.hero p{color:var(--muted);font-size:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px;margin:16px 0;box-shadow:0 5px 20px #17324d0d}
+.typegrid,.choices{display:grid;gap:12px}
+.meta-form{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px}
+.field label{display:block;font-weight:700;margin-bottom:7px}
+.field input{width:100%;font:inherit;padding:13px 14px;border:1px solid var(--line);border-radius:12px;color:var(--ink);background:white}
+.field input:focus{outline:3px solid #0797a522;border-color:var(--accent)}
+.meta-actions{margin-top:14px}.typegrid{grid-template-columns:repeat(2,1fr)}.choices{grid-template-columns:repeat(3,1fr)}
+button{font:inherit}.type,.choice,.primary,.secondary{border-radius:14px;border:1px solid var(--line);padding:16px;cursor:pointer;background:white;color:var(--ink)}
+.type:hover,.choice:hover{border-color:var(--accent)}.type.active{border:2px solid var(--accent);background:#effbfd}
+.choice{text-align:left;min-height:125px}.choice strong{display:block;font-size:18px;margin-bottom:7px}.choice small{color:var(--muted);line-height:1.4}
+.choice.selected{outline:3px solid var(--accent);border-color:transparent}.choice[data-score="1"]{background:var(--easy)}.choice[data-score="2"]{background:var(--mid)}.choice[data-score="3"]{background:var(--hard)}
+.topline{display:flex;justify-content:space-between;gap:15px;align-items:center}.badge{background:#e8f7f9;color:#05737e;padding:7px 11px;border-radius:999px;font-weight:700;white-space:nowrap}
+.progress{height:8px;background:#e7edf2;border-radius:99px;overflow:hidden;margin:12px 0 2px}.bar{height:100%;background:var(--accent);width:0;transition:.2s}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.primary{background:var(--accent);color:white;border:0;font-weight:700}.secondary{font-weight:650}.primary:disabled{opacity:.4;cursor:not-allowed}
+.result{display:none}.score{font-size:48px;font-weight:800}.sub{color:var(--muted)} table{width:100%;border-collapse:collapse;margin-top:15px}th,td{text-align:left;padding:10px;border-bottom:1px solid var(--line)}td:last-child,th:last-child{text-align:right}
+.note{font-size:13px;color:var(--muted);line-height:1.45;margin-top:18px}.hidden{display:none}
+.outcome{margin:12px 0 18px;padding:16px 18px;border-radius:14px;font-size:22px;font-weight:800}
+.score-scale{margin:18px 0 24px}
+.scale-track{position:relative;height:16px;border-radius:99px;background:linear-gradient(90deg,#69c78a 0%,#9fd77c 25%,#efd45c 50%,#f2ad62 75%,#e77773 100%);margin:30px 4px 10px}
+.scale-marker{position:absolute;top:50%;width:24px;height:24px;border:4px solid white;border-radius:50%;background:var(--ink);transform:translate(-50%,-50%);box-shadow:0 1px 5px #0004}
+.scale-labels{display:flex;justify-content:space-between;font-size:13px;font-weight:700}.scale-zones{display:grid;grid-template-columns:repeat(3,1fr);font-size:12px;color:var(--muted);margin-top:5px}.scale-zones span:nth-child(2){text-align:center}.scale-zones span:last-child{text-align:right}
+.outcome.easy{background:var(--easy);color:#267342}.outcome.mid{background:var(--mid);color:#806100}.outcome.hard{background:var(--hard);color:#a33c35}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}.stat{border:1px solid var(--line);border-radius:14px;padding:13px;text-align:center}.stat b{display:block;font-size:25px}.stat.easy{background:var(--easy)}.stat.mid{background:var(--mid)}.stat.hard{background:var(--hard)}
+.profile{margin:22px 0}.profile h3{margin-bottom:8px}.profile-summary{background:#eef7fd;border:1px solid #d6eaf7;border-radius:14px;padding:14px 16px;margin:10px 0 12px;line-height:1.5}.profile-note{color:var(--muted);font-size:14px;margin-top:0}.profile-row{display:grid;grid-template-columns:minmax(170px,1.7fr) 3fr 110px;gap:10px;align-items:center;margin:10px 0}.profile-label{font-size:14px;font-weight:650}.track{height:20px;background:#edf1f4;border-radius:99px;overflow:hidden}.fill{height:100%;border-radius:99px}.fill.easy{width:33.333%;background:#74bf88}.fill.mid{width:66.666%;background:#e4b943}.fill.hard{width:100%;background:#df766f}.profile-value{font-size:13px;font-weight:700}
+@media(max-width:600px){.stats{grid-template-columns:1fr 1fr 1fr}.profile-row{grid-template-columns:1fr}.profile-value{margin-top:-6px}}
+@media(max-width:700px){.choices,.typegrid,.meta-form{grid-template-columns:1fr}.wrap{padding:14px}.choice{min-height:auto}}
+@media print{body{background:white}.no-print,.hero p{display:none!important}.card{box-shadow:none}.wrap{max-width:none}.result{display:block!important}}
+
+.helpbtn{border:0;background:#e9f4f8;color:#176b78;border-radius:50%;width:30px;height:30px;font-weight:800;cursor:pointer;margin-left:8px}
+.helpbox,.advicebox{background:#f4f8fb;border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:10px 0 16px;line-height:1.5}
+.advicebox h3{margin-top:0}.source-links{font-size:13px;color:var(--muted);margin-top:10px}
+.report-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.file-input{display:none}
+.secondary-action{display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+@media print{
+ body{background:white}.no-print,#start,#quiz{display:none!important}.card{box-shadow:none;border:0;padding:0}
+ #result{display:block!important}.report-actions{display:none!important}
+}
+
+.profile-help{border:0;background:#e9f4f8;color:#176b78;border-radius:50%;width:25px;height:25px;font-weight:800;cursor:pointer;margin-left:7px;vertical-align:middle}
+.profile-explain{grid-column:1/-1;background:#f5f9fb;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:-2px 0 8px;font-size:13px;line-height:1.45}
+
+.advicebox ul{margin:10px 0 0;padding-left:22px}.advicebox li{margin:7px 0;line-height:1.45}
+
+.setup-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
+.setup-grid label{display:block;font-weight:700;margin-bottom:6px}
+.setup-grid select{width:100%;padding:11px;border:1px solid var(--line);border-radius:10px;background:white;font:inherit}
+.advice-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.advice-toolbar button{padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:white;cursor:pointer}
+.advice-toolbar button.active{font-weight:800;background:#e9f4f8}
+.close-reading-plan{margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+.session-card{background:white;border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:9px 0}
+.session-card strong{display:block;margin-bottom:4px}
+@media(max-width:650px){.setup-grid{grid-template-columns:1fr}}
+
+.group-goals{background:#f7fafc;border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:14px 0}
+.group-goals h3{margin:0 0 8px}.group-goals ul{margin:8px 0 0;padding-left:21px}.group-goals li{margin:5px 0}
+.focus-chip{display:inline-block;padding:5px 9px;border-radius:999px;background:#e9f4f8;margin:3px 5px 3px 0;font-size:13px;font-weight:700}
+
+.focus-goals-box{border-left:4px solid #2b6f8a;background:#f4fafc}
+.focus-goals-box h3{font-size:19px}
+.block-goals-box{margin-top:18px;background:#fbfbfb}
+.block-goals-box h3{font-size:16px}
+
+/* Ruimere, duidelijkere advieskaarten */
+#teacherAdvice > ul{list-style:none;padding:0;margin:16px 0}
+#teacherAdvice > ul > li{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:18px 20px;
+  margin:0 0 18px;
+  line-height:1.55;
+}
+#teacherAdvice > ul > li > strong{
+  display:block;
+  font-size:17px;
+  margin-bottom:7px;
+}
+#teacherAdvice > ul > li ul{
+  background:#f7fafc;
+  border-radius:10px;
+  padding:12px 16px 12px 34px;
+  margin:12px 0 0;
+}
+#teacherAdvice > ul > li ul li{
+  margin:9px 0;
+  padding-left:2px;
+}
+#teacherAdvice > ul > li br + strong{
+  display:block;
+  margin-top:15px;
+  margin-bottom:5px;
+}
+
+.profile-alert{border-radius:14px;padding:15px 17px;margin:14px 0 18px;border:1px solid var(--line);line-height:1.5}
+.profile-alert h3{margin:0 0 5px;font-size:17px}
+.profile-alert.easy{background:#f1faf4;border-left:5px solid #4f9f69}
+.profile-alert.hard{background:#fff4f1;border-left:5px solid #c95d50}
+.profile-alert.mixed{background:#fff9e8;border-left:5px solid #d7a82b}
+
+.lesson-prep{margin-top:20px;border:2px solid var(--line);border-radius:16px;padding:20px;background:#fbfcfe}
+.lesson-prep h3{margin-top:0}
+.goal-choice{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line)}
+.goal-choice:last-child{border-bottom:0}
+.goal-choice input{margin-top:4px;transform:scale(1.15)}
+.success-list{margin:8px 0 0 20px}
+.diff-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+.diff-card{border:1px solid var(--line);border-radius:12px;padding:12px;background:#fff}
+.diff-card strong{display:block;margin-bottom:5px}
+#teacherNotes{width:100%;min-height:105px;box-sizing:border-box;border:1px solid var(--line);border-radius:10px;padding:12px;font:inherit;resize:vertical}
+.lesson-card-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+@media(max-width:700px){.diff-grid{grid-template-columns:1fr}}
+@media print{
+ body *{visibility:hidden!important}
+ #printLessonCard,#printLessonCard *{visibility:visible!important}
+ #printLessonCard{position:absolute;left:0;top:0;width:100%;padding:18mm;box-sizing:border-box;background:#fff}
+ #printLessonCard button,#printLessonCard .no-print{display:none!important}
+ #printLessonCard .diff-grid{grid-template-columns:repeat(3,1fr)}
+}
+
+.public-intro{max-width:760px;margin:4px auto 22px;text-align:center}
+.tool-tagline{font-size:18px;margin:6px 0;color:var(--text)}
+.source-line{font-size:13px;line-height:1.5;color:var(--muted);margin:7px auto 0;max-width:720px}
+.public-footer{margin:34px auto 12px;padding:18px 20px;border-top:1px solid var(--line);max-width:900px;font-size:12.5px;line-height:1.55;color:var(--muted)}
+.public-footer strong{color:var(--text)}
+@media print{.public-footer,.public-intro{display:none!important}}
+</style>
+</head>
+<body><main class="wrap">
+<section class="hero"><h1>TekstWijzer</h1>
+<div class="public-intro">
+  <p class="tool-tagline">Analyseer tekstcomplexiteit en vertaal de uitkomst naar passend leesonderwijs.</p>
+  <p class="source-line"><em>Gebaseerd op de kwalitatieve analysecriteria uit <span style="font-style:italic">Close Reading</span> (Uitgeverij Pica, 2018) en de blokplanning Leesonderwijs van de PWA.</em></p>
+</div>
+<p>Een snelle kwalitatieve analyse voor Close Reading.</p></section>
+
+<section id="start" class="card">
+<h2>1. Kies de tekstsoort</h2>
+<div class="typegrid">
+<button class="type" data-type="info"><strong>Informatieve tekst</strong><br><small>Feiten, uitleg, kennis en informatie</small></button>
+<button class="type" data-type="story"><strong>Verhalende tekst</strong><br><small>Verhalen, personages en gebeurtenissen</small></button>
+</div>
+<div class="no-print" style="margin-top:14px"><label class="secondary-action" style="font-size:14px;padding:10px 12px;border:0;background:transparent;text-decoration:underline;color:var(--muted)" for="loadAnalysis"><span style="font-size:14px;font-weight:600">Eerder opgeslagen analyse openen</span></label><input id="loadAnalysis" class="file-input" type="file" accept=".json,application/json"></div>
+<div id="metaForm" class="hidden">
+  <div class="meta-form">
+    <div class="field"><label for="textTitle">Naam van de tekst</label><input id="textTitle" type="text" placeholder="Bijv. De reis naar de maan"></div>
+    <div class="field"><label for="author">Auteur</label><input id="author" type="text" placeholder="Naam van de auteur"></div>
+  </div>
+  <div class="meta-actions"><div class="setup-grid">
+<div><label for="groupSelect">Groep</label><select id="groupSelect"><option value="4">Groep 4</option><option value="5" selected>Groep 5</option><option value="6">Groep 6</option><option value="7">Groep 7</option><option value="8">Groep 8</option></select></div>
+<div><label for="lessonPurpose">Waarvoor gebruik je de tekst?</label><div class="muted" style="font-size:12px;margin-bottom:6px">Dit verandert het lesadvies, niet de complexiteitsscore.</div><select id="lessonPurpose"><option value="close">Close Reading</option><option value="first">Eerste kennismaking</option><option value="vocab">Woordenschat</option><option value="comprehension">Begrijpend lezen</option><option value="world">Wereldoriëntatie</option></select></div>
+</div><button id="startAnalysis" class="primary">Start analyse →</button></div>
+</div>
+</section>
+
+<section id="quiz" class="hidden">
+<div class="card">
+<div class="topline"><div><div id="stepLabel" class="sub"></div><h2><span id="aspect"></span></h2></div><span id="typeBadge" class="badge"></span></div>
+<div class="progress"><div id="bar" class="bar"></div></div>
+<p id="question" class="sub"></p>
+<div id="choices" class="choices"></div>
+<div class="actions no-print"><button id="back" class="secondary">← Vorige</button><button id="next" class="primary" disabled>Volgende →</button></div>
+</div>
+</section>
+
+<section id="result" class="card result">
+<div class="topline"><div><div class="sub">Complexiteitsscore</div><div><span id="total" class="score"></span><span class="sub"> / 3</span></div></div><span id="resultType" class="badge"></span></div>
+<div id="outcome" class="outcome"></div>
+<div class="score-scale" aria-label="Complexiteitsschaal van 1 tot 3">
+  <div class="scale-track"><div id="scaleMarker" class="scale-marker"></div></div>
+  <div class="scale-labels"><span>1 · Gemakkelijk</span><span>2 · Gemiddeld</span><span>3 · Moeilijk</span></div>
+  
+</div>
+<p id="textMeta" class="sub"></p><p id="summary"></p><div id="profileAlert"></div><div class="group-goals focus-goals-box">
+<h3>Focusdoelen uit de blokplanning</h3>
+<div id="goalFocus"></div>
+</div>
+<div class="profile">
+  <h3>Complexiteitsprofiel</h3>
+  <div id="profileSummary" class="profile-summary"></div>
+
+<div class="advicebox">
+<h3>Advies op basis van de analyse</h3>
+<div class="advice-toolbar no-print"><button id="shortAdvice" type="button">Kort advies</button><button id="longAdvice" type="button" class="active">Uitgebreid advies</button></div>
+<div id="teacherAdvice"></div>
+<div id="lessonPlan" class="close-reading-plan"></div><div class="group-goals block-goals-box">
+<h3 id="groupGoalsTitle">Doelen uit de blokplanning</h3>
+<div id="groupGoals"></div>
+<p class="source-links">Bron doelen: <strong>Blokplanning Leesonderwijs, blok sep–dec, groep 4 t/m 8</strong> (door de gebruiker aangeleverd). De tool verandert deze doelen niet; hij selecteert alleen welke doelen het beste aansluiten bij de uitkomst van de tekstanalyse.</p>
+</div>
+<div class="source-links">Deze tips passen bij de onderdelen die in jouw analyse het moeilijkst zijn. Kies wat bij jouw tekst en groep past.</div>
+</div>
+  <p class="profile-note">De onderdelen staan van moeilijkst naar makkelijkst. Hoe langer de balk, hoe meer dit onderdeel bijdraagt aan de complexiteit van de tekst.</p>
+  <div id="profileRows"></div>
+</div>
+
+
+<p class="note"><strong>Let op:</strong> de score van 1–3 per onderdeel en de gemiddelde complexiteitsscore zijn een praktisch scoresysteem van deze tool. In deze tool wordt het gemiddelde van de acht beoordelingen gebruikt: 1,00–1,66 = gemakkelijk, 1,67–2,33 = gemiddeld en 2,34–3,00 = moeilijk. De aangeleverde Pica-formulieren werken kwalitatief met de categorieën gemakkelijk, gemiddeld en moeilijk en schrijven zelf geen numerieke totaalscore of grenswaarden voor. Gebruik daarom vooral het profiel per onderdeel en je professionele oordeel.</p>
+<div class="actions no-print"><button id="restart" class="secondary">Opnieuw beginnen</button><button id="saveAnalysis" class="secondary" type="button">Analyse opslaan</button><button onclick="window.print()" class="primary">Resultaat afdrukken / PDF</button></div>
+</section>
+
+<div id="lessonPrep" class="lesson-prep">
+  <h3>Maak mijn lesvoorbereiding</h3>
+  <p class="muted">De tool stelt doelen voor op basis van de analyse. Jij kiest welke doelen je echt wilt gebruiken.</p>
+  <div id="selectableGoals"></div>
+  <div id="generatedLessonGoal"></div>
+  <div id="differentiation"></div>
+  <label for="teacherNotes"><strong>Notities voor mijn les</strong></label>
+  <textarea id="teacherNotes" placeholder="Bijvoorbeeld: moeilijke woorden vooraf bespreken, pagina 2 samen lezen, extra ondersteuning voor..."></textarea>
+  <div class="lesson-card-actions">
+    <button type="button" id="makeLessonCard">Lesvoorbereiding bijwerken</button>
+    <button type="button" id="printLessonCardBtn">Leskaart afdrukken / PDF</button>
+  </div>
+</div>
+<div id="printLessonCard"></div>
+
+<footer class="public-footer">
+  <strong>Bronnen en toelichting</strong><br>
+  TekstWijzer is een onafhankelijke praktische uitwerking voor onderwijsgebruik. De kwalitatieve beoordeling van tekstcomplexiteit is gebaseerd op analysecriteria uit <em>Close Reading. Werken aan dieper tekstbegrip in het basisonderwijs</em> (Uitgeverij Pica, 2018). De gebruikte numerieke score, gemiddelde score, grenswaarden, signaleringen en gegenereerde lesadviezen zijn praktische keuzes binnen TekstWijzer en maken geen deel uit van het oorspronkelijke analyseformulier. De koppeling aan onderwijsdoelen is gebaseerd op de blokplanning Leesonderwijs van de PWA. TekstWijzer is geen officiële tool van Uitgeverij Pica.
+</footer>
+
+</main>
+<script>
+const common = {
+ visual:{name:"Visuele ondersteuning en lay-out",q:"Hoe complex zijn de lay-out en de ondersteunende illustraties?"},
+ style:{name:"Stijl van de schrijver",q:"Hoe complex is de taal en de stijl van de schrijver?"},
+ vocab:{name:"Woordenschat",q:"Hoe toegankelijk is de woordenschat voor de leerlingen?"},
+ meaning:{name:"Betekenis",q:"Hoe complex is de betekenis of informatie in de tekst?"},
+ intent:{name:"Bedoeling van de schrijver",q:"Hoe duidelijk of impliciet is de bedoeling van de schrijver?"},
+ knowledge:{name:"Kennisniveau",q:"Hoeveel achtergrondkennis is nodig om de tekst te begrijpen?"}
+};
+const data={
+info:[
+{name:"Organisatie",q:"Hoe complex is de organisatie van de tekst?",d:["Eén duidelijke structuur, vooral gericht op feiten.","Meer structuren; feiten en eventueel een hypothese of kenmerken van een discipline.","Ingewikkelde opbouw; meerdere structuren/genres, abstractie of meerdere hypothesen."]},
+{...common.visual,d:["Eenvoudige, goed leesbare lay-out; schema’s, tabellen of foto’s ondersteunen direct.","Meer kolommen/onderbrekingen; visuele informatie vraagt enige interpretatie.","Veel onderbrekingen of lastige visuele informatie die niet wordt toegelicht en interpretatie vraagt."]},
+{name:"Relaties tussen ideeën",q:"Hoe duidelijk zijn relaties tussen concepten, processen of gebeurtenissen?",d:["Relaties zijn duidelijk en expliciet uitgelegd.","Relaties zijn subtieler en meer impliciet.","Relaties zijn lastig en moeten uit de tekst worden afgeleid."]},
+{...common.style,d:["Eenvoudige stijl, beschrijvend, eenvoudige zinnen en weinig concepten.","Objectieve stijl met veel feiten en enkele samengestelde of complexe zinnen.","Vakspecifieke stijl met veelomvattende concepten en veel complexe zinnen."]},
+{...common.vocab,d:["Veel bekende woorden; vakspecifieke woorden zijn beperkt en betekenis is vaak uit context te halen.","Veel vakspecifieke en onbekende woorden; betekenis is niet altijd uit context te halen.","Wetenschappelijke/vakspecifieke woordenschat; betekenissen moeten vaak worden afgeleid en zijn niet altijd uit de tekst te halen."]},
+{...common.meaning,d:["Informatie is duidelijk en concepten worden concreet uitgelegd.","Complexe, abstracte ideeën en veel details.","Abstracte, lastige en sterk theoretische informatie."]},
+{...common.intent,d:["Bedoeling is simpel, duidelijk en concreet.","Bedoeling is subtieler verwerkt en vraagt interpretatie.","Bedoeling is impliciet/abstract en door de hele tekst verwerkt."]},
+{...common.knowledge,d:["Inhoud sluit aan bij belevingswereld en dagelijks leven.","Enige technische informatie en achtergrondkennis zijn nodig.","Veel specifieke/technische informatie; diepe achtergrondkennis is vereist."]}
+],
+story:[
+{name:"Organisatie",q:"Hoe complex is de verhaallijn?",d:["Eenvoudig chronologisch, weinig perspectiefwisselingen en redelijk voorspelbaar.","Minder chronologisch, meerdere verhaallijnen en/of veranderingen in perspectief of tijd.","Lastige verhaallijn met meerdere plots, perspectief- of tijdswisselingen; onvoorspelbaar."]},
+{...common.visual,d:["Eenvoudige, goed leesbare lay-out; illustraties sluiten aan bij de inhoud.","Meer kolommen/onderbrekingen; sommige illustraties vragen nadere analyse.","Weinig illustraties sluiten direct aan; de meeste vragen analyse om ze te begrijpen."]},
+{name:"Relaties tussen ideeën/karakters",q:"Hoe duidelijk zijn relaties tussen ideeën en/of karakters?",d:["Relaties zijn duidelijk.","Relaties zijn subtieler en complexer.","Relaties zijn complex en moeten uit de tekst worden afgeleid."]},
+{...common.style,d:["Concreet, eenvoudig taalgebruik en eenvoudige zinsstructuren.","Complexer taalgebruik, soms figuurlijk, met ingewikkeldere zinsstructuren.","Veel figuurlijk en abstract taalgebruik en complexe zinsstructuren."]},
+{...common.vocab,d:["Toegankelijke woordenschat; betekenis is uit de context te halen.","Wisselend toegankelijk en complex; betekenis is niet altijd uit context te halen.","Lastige woorden en begrippen waarvan betekenis vaak niet uit context te halen is."]},
+{...common.meaning,d:["Simpele ideeën van hetzelfde niveau.","Een complex idee of twee lagen in de tekst.","Meerdere lagen die moeten worden afgeleid."]},
+{...common.intent,d:["Bedoeling is simpel, duidelijk en concreet.","Bedoeling is subtieler verwerkt en vraagt interpretatie.","Bedoeling is impliciet en abstract, door de hele tekst verwerkt."]},
+{...common.knowledge,d:["Ervaringen sluiten aan bij dagelijks leven; alledaagse kennis volstaat.","Ervaringen sluiten wisselend aan; enige culturele, historische, technische of taalkundige kennis is nodig.","Ervaringen zijn meestal onbekend; diepe culturele, historische, technische of taalkundige kennis is nodig."]}
+]};
+let type=null,step=0,answers=Array(8).fill(null);
+const $=id=>document.getElementById(id);
+document.querySelectorAll(".type").forEach(b=>b.onclick=()=>{
+ type=b.dataset.type;
+ document.querySelectorAll(".type").forEach(x=>x.classList.toggle("active",x===b));
+ $("metaForm").classList.remove("hidden");
+ $("textTitle").focus();
+});
+$("startAnalysis").onclick=()=>{
+ if(!$("textTitle").value.trim()){alert("Vul eerst de naam van de tekst in.");$("textTitle").focus();return;}
+ step=0;answers=Array(8).fill(null);$("start").classList.add("hidden");$("quiz").classList.remove("hidden");render();
+};
+function render(){const x=data[type][step];$("stepLabel").textContent=`Onderdeel ${step+1} van 8`;$("aspect").textContent=x.name;$("question").textContent=x.q;$("typeBadge").textContent=type==="info"?"Informatief":"Verhalend";$("bar").style.width=`${(step+1)/8*100}%`;
+$("choices").innerHTML=x.d.map((d,i)=>`<button class="choice ${answers[step]===i+1?"selected":""}" data-score="${i+1}"><strong>${i+1} · ${["Gemakkelijk","Gemiddeld","Moeilijk"][i]}</strong><small>${d}</small></button>`).join("");
+document.querySelectorAll(".choice").forEach(b=>b.onclick=()=>{answers[step]=+b.dataset.score;render()});$("back").style.visibility=step?"visible":"hidden";$("next").disabled=!answers[step];$("next").textContent=step===7?"Bekijk resultaat":"Volgende →";}
+$("back").onclick=()=>{if(step){step--;render()}};$("next").onclick=()=>{if(step<7){step++;render()}else showResult()};
+function showResult(){
+ const total=answers.reduce((a,b)=>a+b,0); const avg=total/answers.length;
+ const counts=[0,0,0,0]; answers.forEach(v=>counts[v]++);
+ let level,cls,explain;
+ if(avg<=1.66){level="Gemakkelijke tekst";cls="easy";explain="De meeste kenmerken van deze tekst vallen aan de gemakkelijke kant van het profiel."}
+ else if(avg<=2.33){level="Gemiddelde tekst";cls="mid";explain="De tekst heeft een gemengd complexiteitsprofiel. Bekijk hieronder welke onderdelen extra leesinspanning vragen."}
+ else{level="Moeilijke tekst";cls="hard";explain="Meerdere kenmerken dragen sterk bij aan de complexiteit. Bekijk hieronder waar de grootste leesuitdagingen zitten."}
+ $("quiz").classList.add("hidden");$("result").style.display="block";$("total").textContent=avg.toFixed(2).replace(".",",");
+ $("scaleMarker").style.left=((avg-1)/2*100)+"%";
+ $("resultType").textContent=type==="info"?"Informatieve tekst":"Verhalende tekst";
+ const title=$("textTitle").value.trim(), author=$("author").value.trim();
+ $("textMeta").innerHTML=`<strong>${title}</strong>${author ? " · "+author : ""}`;
+ $("outcome").className="outcome "+cls;$("outcome").textContent=level+" · "+avg.toFixed(2).replace(".",",")+"/3";
+ $("summary").textContent=explain;
+ 
+ const ranked=data[type].map((x,i)=>({name:x.name,score:answers[i],order:i})).sort((a,b)=>b.score-a.score || a.order-b.order);
+ const highest=Math.max(...answers);
+ const top=ranked.filter(x=>x.score===highest).map(x=>x.name);
+ let topText;
+ if(top.length===1) topText=top[0];
+ else if(top.length===2) topText=top[0]+" en "+top[1];
+ else topText=top.slice(0,-1).join(", ")+" en "+top[top.length-1];
+ $("profileSummary").innerHTML=`<strong>Samenvatting:</strong> De grootste bijdrage aan de complexiteit komt van <strong>${topText}</strong> (${highest}/3). ${highest===3?"Deze onderdelen vragen waarschijnlijk de meeste leesinspanning van de leerlingen.":highest===2?"Geen onderdeel is als moeilijk beoordeeld; deze onderdelen vragen relatief de meeste aandacht.":"Alle onderdelen zijn als gemakkelijk beoordeeld."}`;
+ $("profileRows").innerHTML=ranked.map(x=>{
+   const v=x.score, c=["","easy","mid","hard"][v], label=["","Gemakkelijk","Gemiddeld","Moeilijk"][v];
+   return `<div class="profile-row"><div class="profile-label">${x.name}<button type="button" class="profile-help no-print" data-help="${x.order}" aria-label="Betekenis van ${x.name}">?</button></div><div class="track"><div class="fill ${c}"></div></div><div class="profile-value">${v}/3 · ${label}</div></div><div id="profileHelp${x.order}" class="profile-explain hidden">${helpText[type][x.order]}</div>`;
+ }).join("");
+ document.querySelectorAll(".profile-help").forEach(btn=>btn.addEventListener("click",()=>{
+   const box=$("profileHelp"+btn.dataset.help); box.classList.toggle("hidden");
+ }));
+ renderTeacherAdvice();
+ $("rows").innerHTML=data[type].map((x,i)=>`<tr><td>${x.name}</td><td><strong>${answers[i]}</strong> · ${["","Gemakkelijk","Gemiddeld","Moeilijk"][answers[i]]}</td></tr>`).join("");
+}
+$("restart").onclick=()=>{type=null;step=0;answers=Array(8).fill(null);$("result").style.display="none";$("start").classList.remove("hidden");$("metaForm").classList.add("hidden");$("textTitle").value="";$("author").value="";document.querySelectorAll(".type").forEach(x=>x.classList.remove("active"))};
+
+const helpText={
+ info:[
+  "Organisatie: de manier waarop de schrijver de informatie ordent en opbouwt, bijvoorbeeld met een inleiding, tussenkopjes, alinea’s en een duidelijke volgorde.",
+  "Visuele ondersteuning en lay-out: alles in de vormgeving dat helpt om de tekst te begrijpen, zoals afbeeldingen, schema’s, tabellen, kopjes, lettertype en plaatsing.",
+  "Relaties tussen ideeën: de verbanden tussen verschillende gedachten of stukken informatie in een tekst, bijvoorbeeld oorzaak en gevolg, vergelijking, tegenstelling of volgorde.",
+  "Stijl van de schrijver: de manier waarop een schrijver taal gebruikt, bijvoorbeeld de zinsbouw, woordkeuze, toon en manier van formuleren.",
+  "Woordenschat: de woorden die in de tekst worden gebruikt en de kennis van hun betekenis die nodig is om de tekst te begrijpen.",
+  "Betekenis: wat de tekst inhoudelijk zegt of duidelijk wil maken; de boodschap en informatie die de lezer uit de tekst haalt.",
+  "Bedoeling van de schrijver: het doel dat de schrijver met de tekst heeft, bijvoorbeeld informeren, uitleggen, overtuigen of aan het denken zetten.",
+  "Kennisniveau: de hoeveelheid achtergrondkennis en voorkennis die een lezer nodig heeft om de tekst goed te kunnen begrijpen."
+ ],
+ story:[
+  "Organisatie: de manier waarop het verhaal is opgebouwd en geordend, bijvoorbeeld de volgorde van gebeurtenissen, tijdsprongen, perspectief en verhaallijn.",
+  "Visuele ondersteuning en lay-out: alles in de vormgeving dat helpt om het verhaal te begrijpen, zoals illustraties, hoofdstukken, witruimte, lettertype en plaatsing.",
+  "Relaties tussen ideeën/karakters: de verbanden tussen gebeurtenissen, gedachten en personages, bijvoorbeeld waarom iemand iets doet en hoe gebeurtenissen elkaar beïnvloeden.",
+  "Stijl van de schrijver: de manier waarop een schrijver het verhaal vertelt, bijvoorbeeld de zinsbouw, woordkeuze, toon, beeldspraak en vertelwijze.",
+  "Woordenschat: de woorden en uitdrukkingen die in het verhaal worden gebruikt en waarvan de betekenis nodig is om het verhaal te begrijpen.",
+  "Betekenis: wat het verhaal inhoudelijk betekent of duidelijk maakt; dit kan rechtstreeks in de tekst staan of door de lezer worden afgeleid.",
+  "Bedoeling van de schrijver: wat de schrijver met het verhaal wil bereiken of overbrengen, bijvoorbeeld vermaken, ontroeren, laten nadenken of een boodschap meegeven.",
+  "Kennisniveau: de achtergrondkennis en voorkennis die een lezer nodig heeft om gebeurtenissen, situaties, verwijzingen en thema’s in het verhaal te begrijpen."
+ ]
+};
+const gradeGoals={
+ "4":[
+  "kan zonder visuele hulp een verhaal met een begin, midden en einde navertellen en benoemt hierbij wie-wat-waar en de afloop van het verhaal.",
+  "herkent veelvoorkomende tekstsoorten en kan enkele kenmerken ervan noemen: informatieve tekst, verhaal, gedicht.",
+  "weet dat teksten een titel hebben en uit verschillende delen bestaan die alinea’s heten.",
+  "kan de inhoud van een verhaal in eigen woorden navertellen.",
+  "kan aangeven voor wie een tekst bedoeld is.",
+  "kan gebeurtenissen in een verhaal in de goede volgorde zetten.",
+  "kan informatie uit de tekst afleiden en eenvoudige conclusies trekken.",
+  "kan vertellen wat hij/zij van een tekst vindt.",
+  "bedenkt wat hij al weet voordat hij de tekst gaat lezen.",
+  "kan op een eenvoudige tekst(fragment) leesstrategieën toepassen, zoals een onduidelijkheid ophelderen, een verwijsrelatie achterhalen, een voorspelling doen op basis van titel, kopjes en illustraties of een stukje samenvatten in eigen woorden."
+ ],
+ "5":[
+  "herkent veelvoorkomende tekstsoorten zoals verhaal, brief, handleiding en reclametekst aan vorm en inhoud en kan enkele kenmerken hiervan noemen.",
+  "kan bij veelvoorkomende tekstsoorten een lees- en schrijfdoel aangeven.",
+  "kan op een tekst(fragment) op beheersingsniveau leesstrategieën toepassen: onduidelijkheden ophelderen, verwijsrelaties achterhalen, voorspellen op basis van titel, kopjes en illustraties of samenvatten in eigen woorden.",
+  "kan veelvoorkomende verbanden herkennen aan signaalwoorden en benoemen in een tekstfragment.",
+  "bepaalt het onderwerp van een tekst en activeert zijn eigen voorkennis over het onderwerp.",
+  "kan informatie uit de tekst afleiden en conclusies trekken.",
+  "kan met (emotieve) argumenten een oordeel geven over een tekst(fragment)."
+ ],
+ "6":[
+  "bepaalt het onderwerp van een tekst en activeert zijn eigen voorkennis over het onderwerp.",
+  "leest gevarieerde teksten met begrip en kan hieruit informatie afleiden.",
+  "kan stukken tekst samenvatten en de hoofdgedachte hieruit weergeven.",
+  "onderscheidt en benoemt tekstsoorten op functie en doel (verhalende tekst, instructieve tekst, informatieve tekst, betogende tekst).",
+  "onderscheidt en benoemt tekstgenres op vorm/structuur (interview, reclame, nieuwsbericht, recensie), hierbij gebruikmakend van begrippen als inleiding, kern, enz.",
+  "past leesstrategieën als voorspellen, verbanden leggen, onduidelijkheden ophelderen en vragen stellen toe tijdens het lezen.",
+  "plant en stuurt zijn eigen leesgedrag (Begrijp ik nog wat er staat?).",
+  "evalueert en reflecteert op een fictieve tekst aan de hand van belevingsaspecten (wat vond je spannend? Wat maakt het spannend? Hoe voelt het personage zich?).",
+  "kan een eigen oordeel over een tekst(deel) vormen en deze verwoorden."
+ ],
+ "7":[
+  "leest gevarieerde teksten met begrip en kan afleidingen doen (informatie begrijpen die niet letterlijk in de tekst staat) en oordelen geven over (fragmenten) uit de tekst.",
+  "kan hoofdzaken uit een tekst herleiden en deze weergeven in een hoofdgedachte of (schematische) samenvatting.",
+  "onderscheidt en benoemt tekstsoorten op functie en doel (verhalende tekst, instructieve tekst, informatieve tekst, betogende tekst).",
+  "onderscheidt en benoemt tekstgenres op vorm/structuur (interview, reclame, nieuwsbericht, recensie), hierbij gebruikmakend van begrippen als inleiding, kern, enz.",
+  "beschikt over informatievaardigheden die hem/haar in staat stellen informatie te zoeken/herkennen die hij/zij op dat moment nodig heeft.",
+  "past leesstrategieën als voorspellen, verbanden leggen, onduidelijkheden ophelderen en vragen stellen toe tijdens het lezen.",
+  "stuurt zijn eigen leesproces door het bepalen van een leesdoel, het activeren van voorkennis, het monitoren van eigen begrip, enz.",
+  "kan bij het beschouwen van verhalen en gedichten zowel reflecteren vanuit belevingsaspecten als vanuit literaire aspecten als perspectief, schrijfstijl en personages.",
+  "neemt een kritische houding aan ten aanzien van relevantie en betrouwbaarheid van informatie."
+ ],
+ "8":[
+  "leest gevarieerde teksten met begrip en kan afleidingen doen en oordelen geven over (fragmenten) uit de tekst.",
+  "kan hoofdzaken uit een tekst herleiden en deze weergeven in een hoofdgedachte of (schematische) samenvatting.",
+  "onderscheidt en benoemt tekstsoorten op functie en doel (verhalende tekst, instructieve tekst, informatieve tekst, betogende tekst).",
+  "onderscheidt en benoemt tekstgenres op vorm/structuur (interview, reclame, nieuwsbericht, recensie), hierbij gebruikmakend van begrippen als inleiding, kern, enz.",
+  "beschikt over informatievaardigheden die hem/haar in staat stellen informatie te zoeken/herkennen die hij/zij op dat moment nodig heeft.",
+  "past leesstrategieën als voorspellen, verbanden leggen, informatie afleiden en vragen stellen toe tijdens het lezen.",
+  "stuurt zijn eigen leesproces door het bepalen van een leesdoel, het activeren van voorkennis, het monitoren van eigen begrip, enz.",
+  "kan bij het beschouwen van verhalen en gedichten zowel reflecteren vanuit belevingsaspecten als vanuit literaire aspecten als perspectief, schrijfstijl en personages.",
+  "neemt een kritische houding aan ten aanzien van relevantie en betrouwbaarheid van informatie."
+ ]
+};
+const technicalReadingGoals={
+ "4":["beheerst AVI E4.","let bij het (voor)lezen op leestekens."],
+ "5":["beheerst AVI E5.","let bij het (voor)lezen van een verhaal of gedicht op leestekens en maakt gebruik van intonatie."],
+ "6":["beheerst AVI E6.","kan een tekst, verhaal en gedicht vlot, op toon en met expressie voorlezen."],
+ "7":["beheerst AVI E7.","kan een tekst, verhaal en gedicht vlot, op toon en met expressie voorlezen."],
+ "8":["beheerst AVI Plus.","kan een tekst, verhaal en gedicht vlot, op toon en met expressie voorlezen."]
+};
+const aspectKeywords={
+ "Organisatie":["hoofdgedachte","samenvatten","structuur","alinea","volgorde","hoofdzaken"],
+ "Visuele ondersteuning en lay-out":["titel","kopjes","illustraties","vorm/structuur"],
+ "Relaties tussen ideeën":["verbanden","afleiden","conclusies"],
+ "Relaties tussen ideeën/karakters":["afleiden","personage","belevingsaspecten","gebeurtenissen"],
+ "Stijl van de schrijver":["schrijfstijl","perspectief","literaire"],
+ "Woordenschat":["onduidelijkheden","begrip","informatie afleiden"],
+ "Betekenis":["hoofdgedachte","afleiden","samenvatten","hoofdzaken"],
+ "Bedoeling van de schrijver":["functie en doel","leesdoel","oordeel","kritische"],
+ "Kennisniveau":["voorkennis","onderwerp","informatievaardigheden"]
+};
+function matchingGoalIndexes(group, aspect){
+ const goals=gradeGoals[group]||[];
+ const kws=aspectKeywords[aspect]||[];
+ let scored=goals.map((g,i)=>({i,n:kws.reduce((n,k)=>n+(g.toLowerCase().includes(k.toLowerCase())?1:0),0)})).filter(x=>x.n>0).sort((x,y)=>y.n-x.n);
+ return scored.slice(0,2).map(x=>x.i);
+}
+function renderGroupGoals(chosen=[]){
+ const g=$("groupSelect")?$("groupSelect").value:"5";
+ const goals=gradeGoals[g]||gradeGoals["5"];
+ const tech=technicalReadingGoals[g]||[];
+ $("groupGoalsTitle").textContent=`Doelen uit de blokplanning – groep ${g}`;
+ $("groupGoals").innerHTML=`<p><strong>Begrijpend lezen</strong></p><ul>${goals.map(x=>`<li>${x}</li>`).join("")}</ul>
+ <p><strong>Technisch lezen</strong></p><ul>${tech.map(x=>`<li>${x}</li>`).join("")}</ul>`;
+ let ids=[];
+ chosen.slice(0,3).forEach(x=>matchingGoalIndexes(g,x.name).forEach(i=>ids.push(i)));
+ ids=[...new Set(ids)].slice(0,3);
+ $("goalFocus").innerHTML=ids.length?`<p class="muted">Op basis van deze tekstanalyse zijn de volgende doelen uit de blokplanning van <strong>groep ${g}</strong> het meest passend.</p>`+ids.map(i=>`<span class="focus-chip">${goals[i]}</span>`).join(""):`<p class="muted">Op basis van deze analyse is geen extra focusdoel nodig.</p>`;
+}
+const adviceMap={
+ "Organisatie":`Maak de opbouw van de tekst zichtbaar. Dit helpt leerlingen om informatie op de juiste plek in de tekst te zoeken en de grote lijn vast te houden.
+ <br><br><strong>Ideeën voor activiteiten:</strong>
+ <ul>
+ <li><strong>Tekst voorspellen:</strong> bekijk alleen titel, kopjes en afbeeldingen. Waar zal de tekst over gaan?</li>
+ <li><strong>Tekstpuzzel:</strong> geef enkele alinea’s los en laat leerlingen bepalen wat een logische volgorde is.</li>
+ <li><strong>Tekstschema:</strong> zet de belangrijkste onderdelen samen in een eenvoudig schema.</li>
+ <li><strong>Kopjes bedenken:</strong> laat leerlingen zelf een passend kopje boven een alinea schrijven.</li>
+ <li><strong>Na elke alinea:</strong> laat leerlingen in één zin zeggen waar de alinea over gaat.</li>
+ </ul>`,
+ "Visuele ondersteuning en lay-out":`Leer leerlingen om niet alleen de lopende tekst te lezen, maar ook informatie uit afbeeldingen, kopjes, tabellen en schema’s te gebruiken.
+ <br><br><strong>Ideeën voor activiteiten:</strong>
+ <ul>
+ <li><strong>Plaatje voorspelt:</strong> bekijk eerst alleen de afbeelding. Wat denk je dat je straks gaat lezen?</li>
+ <li><strong>Koppelen:</strong> laat leerlingen een afbeelding of schema koppelen aan de juiste alinea.</li>
+ <li><strong>Wat voegt het toe?</strong> bespreek welke informatie in het plaatje staat die niet letterlijk in de tekst staat.</li>
+ <li><strong>Zelf visualiseren:</strong> laat leerlingen bij een moeilijke alinea een eenvoudige tekening of schema maken.</li>
+ <li><strong>Onderschrift maken:</strong> laat leerlingen zelf een passend onderschrift bij een afbeelding schrijven.</li>
+ </ul>`,
+ "Relaties tussen ideeën":`Maak verbanden tussen informatie expliciet. Denk aan oorzaak en gevolg, overeenkomst en verschil, probleem en oplossing of een volgorde in de tijd.
+ <br><br><strong>Ideeën voor activiteiten:</strong>
+ <ul>
+ <li><strong>Pijlen tekenen:</strong> verbind twee stukken informatie en schrijf bij de pijl wat het verband is.</li>
+ <li><strong>Omdat-dus:</strong> leerlingen vullen zinnen aan met ‘omdat’ en ‘dus’.</li>
+ <li><strong>Oorzaak-gevolgschema:</strong> verzamel oorzaken links en gevolgen rechts.</li>
+ <li><strong>Wat hoort bij elkaar?</strong> geef losse feiten uit de tekst en laat leerlingen paren maken.</li>
+ <li><strong>Bewijs zoeken:</strong> stel een vraag over een verband en laat leerlingen de twee tekstplaatsen aanwijzen die samen het antwoord geven.</li>
+ </ul>`,
+ "Relaties tussen ideeën/karakters":`Maak zichtbaar hoe gebeurtenissen en personages met elkaar samenhangen. Bespreek wat een personage doet, waarom dat gebeurt en wat daarvan het gevolg is.
+ <br><br><strong>Ideeën voor activiteiten:</strong>
+ <ul>
+ <li><strong>Wie-wat-waarom:</strong> maak een schema met personage, gebeurtenis en reden.</li>
+ <li><strong>Relatiekaart:</strong> schrijf personages in cirkels en teken lijnen tussen hen. Wat is hun relatie?</li>
+ <li><strong>Voor en na:</strong> wat verandert er bij een personage door een gebeurtenis?</li>
+ <li><strong>Motief zoeken:</strong> waarom doet het personage dit? Laat leerlingen bewijs uit de tekst aanwijzen.</li>
+ <li><strong>Gebeurtenisketen:</strong> zet belangrijke gebeurtenissen op volgorde en verbind oorzaak en gevolg.</li>
+ </ul>`,
+ "Stijl van de schrijver":`Sta bewust stil bij de manier waarop de schrijver schrijft. Moeilijke zinnen, bijzondere formuleringen of beeldspraak kunnen het begrijpen lastiger maken.
+ <br><br><strong>Ideeën voor activiteiten:</strong>
+ <ul>
+ <li><strong>Zeg het makkelijker:</strong> herschrijf samen een moeilijke zin in gewone taal.</li>
+ <li><strong>Knip de zin:</strong> verdeel een lange zin in kleinere stukken en bespreek ieder deel.</li>
+ <li><strong>Verwijswoorden:</strong> omcirkel woorden als ‘hij’, ‘dit’, ‘daarom’ en ‘die’. Waar verwijzen ze naar?</li>
+ <li><strong>Hardop denken:</strong> modelleer hoe jij een moeilijke zin stap voor stap begrijpt.</li>
+ <li><strong>Vergelijk formuleringen:</strong> geef een moeilijke en eenvoudige versie van dezelfde zin. Wat verandert er?</li>
+ </ul>`,
+ "Woordenschat":`Besteed extra aandacht aan woorden die leerlingen nodig hebben om de tekst te begrijpen. Kies liever enkele belangrijke woorden en behandel die goed.
+ <br><br><strong>Ideeën voor activiteiten:</strong>
+ <ul>
+ <li><strong>Vooraf kiezen:</strong> behandel vóór het lezen drie tot vijf belangrijke woorden.</li>
+ <li><strong>Betekenis uit de zin:</strong> bedek het moeilijke woord en laat leerlingen voorspellen welk woord of welke betekenis past.</li>
+ <li><strong>Woordweb:</strong> verzamel betekenis, voorbeelden, tegenstellingen en woorden die erbij horen.</li>
+ <li><strong>Eigen zin:</strong> laat leerlingen het nieuwe woord zelf in een goede zin gebruiken.</li>
+ <li><strong>Woorddetective:</strong> laat leerlingen tijdens het lezen woorden markeren waarvan de betekenis belangrijk is voor het begrijpen.</li>
+ </ul>`,
+ "Betekenis":`Help leerlingen om verder te kijken dan losse zinnen: wat vertelt dit stukje ons en wat betekent de tekst als geheel?
+ <br><br><strong>Ideeën voor activiteiten:</strong>
+ <ul>
+ <li><strong>Eén-zin-samenvatting:</strong> na een alinea of stukje vertellen leerlingen in één zin wat het belangrijkste is.</li>
+ <li><strong>Wat bedoelt dit?</strong> kies een belangrijke zin en laat leerlingen die in hun eigen woorden uitleggen.</li>
+ <li><strong>Tussen de regels:</strong> stel een vraag waarvan het antwoord niet letterlijk in één zin staat.</li>
+ <li><strong>Bewijs erbij:</strong> leerlingen geven antwoord én wijzen aan waardoor ze dat denken.</li>
+ <li><strong>Kern kiezen:</strong> geef drie mogelijke hoofdgedachten en laat leerlingen kiezen en uitleggen.</li>
+ </ul>`,
+ "Bedoeling van de schrijver":`Laat leerlingen nadenken over waarom de schrijver de tekst heeft geschreven en hoe je dat aan de tekst kunt zien.
+ <br><br><strong>Ideeën voor activiteiten:</strong>
+ <ul>
+ <li><strong>Doel kiezen:</strong> informeren, uitleggen, overtuigen, vermaken of aan het denken zetten?</li>
+ <li><strong>Bewijs zoeken:</strong> welke zin, woordkeuze of tekstkenmerk laat het doel zien?</li>
+ <li><strong>Voor wie?</strong> bespreek voor welke lezer de tekst waarschijnlijk is geschreven.</li>
+ <li><strong>Andere bedoeling:</strong> hoe zou de tekst veranderen als de schrijver een ander doel had?</li>
+ <li><strong>Titel onderzoeken:</strong> past de titel bij wat de schrijver wil bereiken? Waarom?</li>
+ </ul>`,
+ "Kennisniveau":`Zorg dat leerlingen genoeg achtergrondkennis hebben om de tekst te kunnen begrijpen. Haal eerst op wat ze al weten en vul belangrijke ontbrekende kennis kort aan.
+ <br><br><strong>Ideeën voor activiteiten:</strong>
+ <ul>
+ <li><strong>Woordweb vooraf:</strong> wat weten we al over het onderwerp?</li>
+ <li><strong>Drie dingen:</strong> geef vóór het lezen drie feiten die nodig zijn om de tekst te begrijpen.</li>
+ <li><strong>Foto of voorwerp:</strong> gebruik een afbeelding, kaart, voorwerp of korte demonstratie om voorkennis op te bouwen.</li>
+ <li><strong>Weet / geleerd:</strong> maak twee kolommen: ‘Dit wist ik al’ en ‘Dit heb ik geleerd’.</li>
+ <li><strong>Mis je kennis?</strong> laat leerlingen aanwijzen welk stukje moeilijk is omdat ze iets over het onderwerp nog niet weten.</li>
+ </ul>`
+};
+function renderHelp(){
+ const box=$("helpBox"); box.textContent=helpText[type][step]; box.classList.toggle("hidden");
+}
+
+
+function renderProfileAlert(){
+ const vals=answers.filter(x=>x!=null);
+ const easy=vals.filter(x=>x===1).length;
+ const hard=vals.filter(x=>x===3).length;
+ let html="";
+ if(easy===8){
+   html=`<div class="profile-alert easy"><h3>Let op: zeer gemakkelijk profiel</h3>Deze tekst scoort op alle onderdelen als gemakkelijk. De tekst vraagt waarschijnlijk weinig extra leesinspanning. Voor diep tekstbegrip kan hij mogelijk weinig uitdaging bieden. Overweeg een complexere tekst, of gebruik deze tekst bewust voor een ander lesdoel.</div>`;
+ } else if(easy>=7){
+   html=`<div class="profile-alert easy"><h3>Signaal: overwegend gemakkelijk</h3>${easy} van de 8 onderdelen scoren als gemakkelijk. Er lijkt weinig extra ondersteuning nodig. Kijk of de tekst voldoende uitdaging biedt voor het doel dat je ermee wilt bereiken.</div>`;
+ } else if(hard===8){
+   html=`<div class="profile-alert hard"><h3>Let op: zeer moeilijk profiel</h3>Deze tekst scoort op alle onderdelen als moeilijk. Leerlingen moeten op veel gebieden tegelijk extra leesinspanning leveren. Overweeg sterke ondersteuning, werken in kleinere tekstgedeelten of een toegankelijkere tekst.</div>`;
+ } else if(hard>=7){
+   html=`<div class="profile-alert hard"><h3>Signaal: overwegend moeilijk</h3>${hard} van de 8 onderdelen scoren als moeilijk. De tekst vraagt op bijna alle gebieden extra leesinspanning. Bied veel ondersteuning en overweeg of alle moeilijkheden tegelijk nodig zijn voor jouw lesdoel.</div>`;
+ } else if(hard>=5){
+   html=`<div class="profile-alert mixed"><h3>Aandachtspunt: veel complexe onderdelen</h3>${hard} van de 8 onderdelen scoren als moeilijk. Kies bewust welke moeilijkheden je in de les centraal wilt stellen en ondersteun de overige onderdelen.</div>`;
+ }
+ $("profileAlert").innerHTML=html;
+}
+let adviceMode="long";
+function renderTeacherAdvice(){
+ renderProfileAlert();
+ const ranked=data[type].map((x,i)=>({name:x.name,score:answers[i]})).sort((a,b)=>b.score-a.score);
+ const hard=ranked.filter(x=>x.score===3);
+ const chosen=hard.length?hard:ranked.filter(x=>x.score===2).slice(0,3);
+ renderGroupGoals(chosen);
+ const intro=hard.length?"Deze onderdelen maken de tekst het lastigst. Hierbij passen de volgende tips:":chosen.length?"Deze onderdelen kunnen wat extra aandacht gebruiken:":"De tekst scoort op alle onderdelen gemakkelijk. Extra ondersteuning lijkt op basis van deze analyse niet nodig.";
+ let html=intro;
+ if(!chosen.length){
+   html+=`<div class="session-card"><strong>Wil je meer uitdaging?</strong>Laat leerlingen bijvoorbeeld een diepere afleiding maken, twee tekstgedeelten met elkaar verbinden, de bedoeling van de schrijver onderzoeken, een eigen vraag met tekstbewijs maken of de tekst vergelijken met een tweede tekst.</div>`;
+ }
+ if(chosen.length){
+   html+="<ul>"+chosen.map(x=>{
+     let txt=adviceMap[x.name]||"";
+     if(adviceMode==="short"){
+       txt=txt.replace(/<br><br><strong>Ideeën voor activiteiten:<\/strong>[\s\S]*/,"");
+     }
+     return `<li><strong>${x.name}:</strong> ${txt}</li>`;
+   }).join("")+"</ul>";
+ }
+ $("teacherAdvice").innerHTML=html;
+ renderLessonPlan(chosen);
+ renderSelectableGoals(true);
+ renderLessonPreparation();
+}
+function renderLessonPlan(chosen){
+ const group=$("groupSelect")?$("groupSelect").value:"5";
+ const purpose=$("lessonPurpose")?$("lessonPurpose").value:"close";
+ const focus=chosen.length?chosen.slice(0,2).map(x=>x.name).join(" en "):"algemeen tekstbegrip";
+ const goals=gradeGoals[group]||gradeGoals["5"];
+ let goalIds=[]; chosen.slice(0,2).forEach(x=>matchingGoalIndexes(group,x.name).forEach(i=>goalIds.push(i)));
+ goalIds=[...new Set(goalIds)].slice(0,2);
+ const goalSentence=goalIds.length?goals[goalIds[0]]:goals[0];
+ const easier=Number(group)<=4;
+ const independent=Number(group)>=7;
+ const support=easier?"Werk veel samen, denk hardop voor en laat leerlingen eerst mondeling antwoorden.":independent?"Laat leerlingen vaker zelfstandig tekstbewijs zoeken, keuzes uitleggen en antwoorden vergelijken.":"Modelleer eerst één voorbeeld en laat leerlingen daarna samen of zelfstandig verder werken.";
+
+ if(purpose==="close"){
+   $("lessonPlan").innerHTML=`<h3>Lesfocus – Close Reading</h3>
+   <p>Gebruik de tekst om meerdere keren dieper te lezen. De analyse wijst vooral op <strong>${focus}</strong>. Passend doel uit de blokplanning: <strong>${goalSentence}</strong></p>
+   <div class="session-card"><strong>Sessie 1 – Wat zegt de tekst?</strong>Activeer kort de voorkennis, lees de tekst en bespreek de belangrijkste informatie of gebeurtenissen. Laat leerlingen in eigen woorden vertellen wat de tekst zegt. Vraag steeds: <em>Waar zie je dat in de tekst?</em></div>
+   <div class="session-card"><strong>Sessie 2 – Hoe wordt het in de tekst gezegd?</strong>Zoom in op de onderdelen die uit de analyse moeilijk blijken. Onderzoek bijvoorbeeld woordkeuze, verbanden, formuleringen, tekststructuur of personages. Laat leerlingen markeren en tekstbewijs aanwijzen.</div>
+   <div class="session-card"><strong>Sessie 3 – Wat is de diepere betekenis?</strong>Combineer informatie uit verschillende delen van de tekst. Laat leerlingen afleiden, verklaren en nadenken over boodschap of bedoeling. Gebruik: <em>Ik denk …, omdat uit de tekst blijkt …</em></div>
+   <p><strong>Tekstbewijs-check:</strong> teruggekeken in de tekst · uitgelegd waarom · een aanwijzing of voorbeeld gebruikt.</p>`;
+ } else if(purpose==="world"){
+   $("lessonPlan").innerHTML=`<h3>Lesfocus – Wereldoriëntatie</h3>
+   <p>Gebruik de tekst vooral om <strong>kennis over het onderwerp op te bouwen</strong>. De analyse laat zien dat vooral <strong>${focus}</strong> extra ondersteuning vraagt. Passend doel uit de blokplanning: <strong>${goalSentence}</strong></p>
+   <div class="session-card"><strong>Voor het lezen – voorkennis</strong>Maak zichtbaar wat leerlingen al weten. Gebruik bijvoorbeeld een woordweb, afbeelding, kaart, tijdlijn of enkele kernvragen. Geef ontbrekende achtergrondkennis die nodig is om de tekst te begrijpen.</div>
+   <div class="session-card"><strong>Tijdens het lezen – vakinhoud</strong>Selecteer belangrijke vakbegrippen en feiten. Laat leerlingen oorzaak-gevolg, volgorde, overeenkomsten of verschillen uit de tekst halen. Gebruik waar passend een schema, tijdlijn of begrippenweb.</div>
+   <div class="session-card"><strong>Na het lezen – kennis vasthouden</strong>Laat leerlingen de belangrijkste nieuwe kennis in eigen woorden uitleggen. Mogelijkheden: drie dingen die ik geleerd heb, een schema aanvullen, een uitleg aan een klasgenoot of een korte inhoudsvraag met tekstbewijs.</div>
+   <p>${support}</p>`;
+ } else if(purpose==="vocab"){
+   $("lessonPlan").innerHTML=`<h3>Lesfocus – Woordenschat</h3>
+   <p>Gebruik de tekst vooral om <strong>belangrijke woorden diep en herhaald te leren</strong>. Houd daarbij rekening met de moeilijkheid bij <strong>${focus}</strong>. Passend doel uit de blokplanning: <strong>${goalSentence}</strong></p>
+   <div class="session-card"><strong>1. Kies kernwoorden</strong>Kies een klein aantal woorden die belangrijk zijn voor het begrijpen van de tekst en die leerlingen vaker kunnen tegenkomen.</div>
+   <div class="session-card"><strong>2. Ontdek de betekenis</strong>Bespreek de contextzin, geef een eenvoudige betekenis en gebruik waar mogelijk afbeelding, voorbeeld, tegenstelling, woorddeel of woordfamilie.</div>
+   <div class="session-card"><strong>3. Gebruik de woorden</strong>Laat leerlingen woorden sorteren, koppelen, uitbeelden, in een eigen zin gebruiken of verwerken in een woordweb.</div>
+   <div class="session-card"><strong>4. Kom erop terug</strong>Gebruik de woorden later opnieuw in vragen, gesprekken en korte opdrachten. Eén keer uitleggen is niet het eindpunt.</div>
+   <p>${support}</p>`;
+ } else if(purpose==="comprehension"){
+   $("lessonPlan").innerHTML=`<h3>Lesfocus – Begrijpend lezen</h3>
+   <p>Gebruik de tekst om leesbegrip en leesstrategieën doelgericht te oefenen. De analyse wijst vooral op <strong>${focus}</strong>. Passend doel uit de blokplanning: <strong>${goalSentence}</strong></p>
+   <div class="session-card"><strong>Voor het lezen</strong>Bepaal het leesdoel, activeer voorkennis en laat leerlingen voorspellen op basis van titel, kopjes en eventuele afbeeldingen.</div>
+   <div class="session-card"><strong>Tijdens het lezen</strong>Laat leerlingen hun begrip controleren. Kies vragen en strategieën die passen bij de moeilijke onderdelen: verbanden leggen, afleiden, verwijswoorden achterhalen, onduidelijkheden ophelderen of hoofd- en bijzaken onderscheiden.</div>
+   <div class="session-card"><strong>Na het lezen</strong>Laat leerlingen hoofdgedachte of kerninformatie verwoorden, kort samenvatten en antwoorden onderbouwen met informatie uit de tekst.</div>
+   <p>${support}</p>`;
+ } else {
+   $("lessonPlan").innerHTML=`<h3>Lesfocus – Eerste kennismaking</h3>
+   <p>Maak de tekst eerst <strong>toegankelijk</strong>, zonder alle moeilijke stukken vooraf weg te nemen. De analyse laat zien dat vooral <strong>${focus}</strong> aandacht vraagt. Passend doel uit de blokplanning: <strong>${goalSentence}</strong></p>
+   <div class="session-card"><strong>Kijk vooruit</strong>Bekijk titel, kopjes en afbeeldingen. Laat leerlingen voorspellen waar de tekst over gaat en ophalen wat ze al weten.</div>
+   <div class="session-card"><strong>Maak de ingang makkelijker</strong>Leg alleen noodzakelijke achtergrondkennis en enkele sleutelwoorden vooraf uit. Bespreek kort wat leerlingen nodig hebben om te kunnen beginnen.</div>
+   <div class="session-card"><strong>Eerste lezing</strong>Lees met als doel de grote lijn te begrijpen. Laat leerlingen nog niet ieder moeilijk detail oplossen.</div>
+   <div class="session-card"><strong>Korte verwerking</strong>Vraag: Waar ging de tekst vooral over? Wat viel op? Wat was nog moeilijk? Gebruik dat als vertrekpunt voor een volgende les.</div>
+   <p>${support}</p>`;
+ }
+}
+
+let selectedFocusGoalIndexes=[];
+
+function currentChosenAspects(){
+ const type=$("textType")?.value||"informative";
+ const aspects=type==="narrative"?narrativeAspects:informativeAspects;
+ return aspects.map((a,i)=>({name:a.name,score:answers[i]||0})).filter(x=>x.score>=2).sort((a,b)=>b.score-a.score);
+}
+function proposedGoalIndexes(){
+ const g=$("groupSelect")?.value||"5";
+ let ids=[];
+ currentChosenAspects().slice(0,3).forEach(x=>matchingGoalIndexes(g,x.name).forEach(i=>ids.push(i)));
+ ids=[...new Set(ids)].slice(0,3);
+ if(!ids.length) ids=[0];
+ return ids;
+}
+function renderSelectableGoals(reset=false){
+ const g=$("groupSelect")?.value||"5", goals=gradeGoals[g]||[];
+ const proposed=proposedGoalIndexes();
+ if(reset || !selectedFocusGoalIndexes.length) selectedFocusGoalIndexes=[...proposed];
+ $("selectableGoals").innerHTML=`<h4>Focusdoelen uit de blokplanning</h4>`+
+ proposed.map(i=>`<label class="goal-choice"><input type="checkbox" class="focusGoalCheck" value="${i}" ${selectedFocusGoalIndexes.includes(i)?"checked":""}><span>${goals[i]}</span></label>`).join("");
+ document.querySelectorAll(".focusGoalCheck").forEach(el=>el.addEventListener("change",()=>{
+   selectedFocusGoalIndexes=[...document.querySelectorAll(".focusGoalCheck:checked")].map(x=>Number(x.value));
+   renderLessonPreparation();
+ }));
+}
+function makeLessonGoal(){
+ const g=$("groupSelect")?.value||"5", goals=gradeGoals[g]||[];
+ const chosen=currentChosenAspects();
+ const names=chosen.slice(0,2).map(x=>x.name.toLowerCase());
+ const selected=selectedFocusGoalIndexes.map(i=>goals[i]).filter(Boolean);
+ let goal=selected[0]||goals[0]||"Ik begrijp de tekst en kan mijn antwoord uitleggen.";
+ if(goal) goal=goal.replace(/^kan /i,"").replace(/^beschikt /i,"beschik over ").replace(/^past /i,"pas ").replace(/^bepaalt /i,"bepaal ").replace(/^leest /i,"lees ").replace(/^onderscheidt /i,"onderscheid ").replace(/^stuurt /i,"stuur ").replace(/^neemt /i,"neem ");
+ goal="Ik "+goal.charAt(0).toLowerCase()+goal.slice(1);
+ if(!/[.!?]$/.test(goal)) goal+=".";
+ const criteria=[
+   "Ik geef antwoord in een hele zin.",
+   "Ik kijk terug in de tekst als ik mijn antwoord uitleg.",
+   "Ik gebruik een aanwijzing, voorbeeld of stukje tekst als bewijs."
+ ];
+ return {goal,criteria,names};
+}
+function differentiationText(){
+ const chosen=currentChosenAspects(), top=chosen[0]?.name||"tekstbegrip";
+ return {
+ support:`Maak ${top.toLowerCase()} toegankelijker: modelleer één voorbeeld, werk in kleine stappen, bespreek noodzakelijke woorden of voorkennis vooraf en laat leerlingen eerst samen of mondeling antwoorden.`,
+ base:`Laat leerlingen de kernopdracht uitvoeren met de tekst erbij. Vraag hen hun antwoord uit te leggen en terug te wijzen naar de tekst.`,
+ challenge:`Laat leerlingen een diepere afleiding maken, meerdere tekstgedeelten verbinden, een eigen vraag met tekstbewijs maken of hun antwoord vergelijken en beargumenteren.`
+ };
+}
+function renderLessonPreparation(){
+ const info=makeLessonGoal(), d=differentiationText();
+ $("generatedLessonGoal").innerHTML=`<h4>Lesdoel</h4><p><strong>${info.goal}</strong></p><h4>Succescriteria</h4><ul class="success-list">${info.criteria.map(x=>`<li>${x}</li>`).join("")}</ul>`;
+ $("differentiation").innerHTML=`<h4>Differentiatie</h4><div class="diff-grid"><div class="diff-card"><strong>Extra ondersteuning</strong>${d.support}</div><div class="diff-card"><strong>Basis</strong>${d.base}</div><div class="diff-card"><strong>Extra uitdaging</strong>${d.challenge}</div></div>`;
+ buildPrintableLessonCard();
+}
+function buildPrintableLessonCard(){
+ const g=$("groupSelect")?.value||"5", goals=gradeGoals[g]||[];
+ const title=$("title")?.value||$("textTitle")?.value||"Onbenoemde tekst";
+ const author=$("author")?.value||$("textAuthor")?.value||"";
+ const purpose=$("lessonPurpose")?.options[$("lessonPurpose").selectedIndex]?.text||"";
+ const info=makeLessonGoal(), d=differentiationText();
+ const selected=selectedFocusGoalIndexes.map(i=>goals[i]).filter(Boolean);
+ const aspects=currentChosenAspects().slice(0,3);
+ const notes=$("teacherNotes")?.value||"";
+ $("printLessonCard").innerHTML=`<div><h1>Lesvoorbereiding</h1><p><strong>Tekst:</strong> ${title}${author?` – ${author}`:""}<br><strong>Groep:</strong> ${g}<br><strong>Lesdoel van gebruik:</strong> ${purpose}</p>
+ <h2>Uit de tekstanalyse</h2><p>${aspects.length?`Belangrijkste aandachtspunten: <strong>${aspects.map(x=>`${x.name} (${x.score}/3)`).join(", ")}</strong>.`:"De tekst scoort op alle onderdelen als gemakkelijk."}</p>
+ <h2>Focusdoelen uit de blokplanning</h2>${selected.length?`<ul>${selected.map(x=>`<li>${x}</li>`).join("")}</ul>`:"<p>Geen focusdoel geselecteerd.</p>"}
+ <h2>Lesdoel</h2><p><strong>${info.goal}</strong></p>
+ <h2>Succescriteria</h2><ul>${info.criteria.map(x=>`<li>${x}</li>`).join("")}</ul>
+ <h2>Aanpak</h2>${$("lessonPlan")?.innerHTML||""}
+ <h2>Differentiatie</h2><div class="diff-grid"><div class="diff-card"><strong>Extra ondersteuning</strong>${d.support}</div><div class="diff-card"><strong>Basis</strong>${d.base}</div><div class="diff-card"><strong>Extra uitdaging</strong>${d.challenge}</div></div>
+ ${notes?`<h2>Notities voor mijn les</h2><p>${notes.replace(/\n/g,"<br>")}</p>`:""}</div>`;
+}
+function saveAnalysis(){
+ const payload={version:1,type,title:$("textTitle").value.trim(),author:$("author").value.trim(),answers,score:answers.reduce((a,b)=>a+b,0)/answers.length,group:$("groupSelect")?$("groupSelect").value:"5",lessonPurpose:$("lessonPurpose")?$("lessonPurpose").value:"close",savedAt:new Date().toISOString()};
+ const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
+ const a=document.createElement("a");a.href=URL.createObjectURL(blob);
+ a.download=(payload.title||"tekstanalyse").replace(/[^\w\-]+/g,"_")+".json";a.click();URL.revokeObjectURL(a.href);
+}
+$("saveAnalysis").addEventListener("click",saveAnalysis);
+$("loadAnalysis").addEventListener("change",async e=>{
+ const f=e.target.files&&e.target.files[0]; if(!f)return;
+ try{
+  const d=JSON.parse(await f.text());
+  if(!["info","story"].includes(d.type)||!Array.isArray(d.answers)||d.answers.length!==8||d.answers.some(v=>![1,2,3].includes(v))) throw new Error();
+  type=d.type; answers=d.answers; if($("groupSelect")&&d.group)$("groupSelect").value=d.group; if($("lessonPurpose")&&d.lessonPurpose)$("lessonPurpose").value=d.lessonPurpose; $("textTitle").value=d.title||""; $("author").value=d.author||"";
+  $("start").classList.add("hidden"); $("quiz").classList.add("hidden"); showResult();
+ }catch(err){alert("Dit analysebestand kan niet worden geopend.");}
+ e.target.value="";
+});
+
+if($("shortAdvice")) $("shortAdvice").addEventListener("click",()=>{adviceMode="short";$("shortAdvice").classList.add("active");$("longAdvice").classList.remove("active");renderTeacherAdvice();});
+if($("longAdvice")) $("longAdvice").addEventListener("click",()=>{adviceMode="long";$("longAdvice").classList.add("active");$("shortAdvice").classList.remove("active");renderTeacherAdvice();});
+if($("groupSelect")) $("groupSelect").addEventListener("change",()=>{if(!$("result").classList.contains("hidden"))renderTeacherAdvice();});
+if($("lessonPurpose")) $("lessonPurpose").addEventListener("change",()=>{if(!$("result").classList.contains("hidden"))renderTeacherAdvice();});
+
+document.addEventListener("DOMContentLoaded",()=>{
+ const make=$("makeLessonCard"), print=$("printLessonCardBtn"), notes=$("teacherNotes");
+ if(make) make.addEventListener("click",()=>{renderLessonPreparation();});
+ if(print) print.addEventListener("click",()=>{buildPrintableLessonCard();window.print();});
+ if(notes) notes.addEventListener("input",buildPrintableLessonCard);
+});
+</script></body></html>
