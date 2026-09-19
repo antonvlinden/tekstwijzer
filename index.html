@@ -168,10 +168,36 @@ button{font:inherit}.type,.choice,.primary,.secondary{border-radius:14px;border:
 .diff-route.base{border-left:5px solid #4f8fbd}
 .diff-route.challenge{border-left:5px solid #6f65a8}
 .route-count{font-size:12px;font-weight:700;border-radius:999px;padding:3px 7px;background:#f1f4f7;margin-left:6px}
+
+.brand-row{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.brand-row h1{margin:0}
+.brand-credit{font-size:13px;line-height:1.35;color:var(--muted);padding-bottom:5px;border-left:1px solid var(--line);padding-left:14px}
+.brand-credit strong{color:var(--ink);font-weight:650}
+@media(max-width:620px){.brand-row{gap:8px}.brand-credit{width:100%;border-left:0;border-top:1px solid var(--line);padding:8px 0 0}}
+
+.brand-school{display:flex;align-items:center;gap:12px}
+.brand-school img{display:block;width:235px;max-width:42vw;height:auto}
+.brand-school .brand-credit{white-space:nowrap}
+@media(max-width:720px){
+ .brand-school{width:100%;align-items:center;flex-wrap:wrap}
+ .brand-school img{width:220px;max-width:80vw}
+ .brand-school .brand-credit{white-space:normal}
+}
+
+.dev-notice{margin:14px 0 20px;padding:11px 14px;border:1px solid #e2c56b;border-radius:10px;background:#fff9e6;font-size:13px;line-height:1.45}
+.dev-notice strong{font-weight:700}
 </style>
 </head>
 <body><main class="wrap">
-<section class="hero"><h1>TekstWijzer</h1>
+<section class="hero">
+<div class="brand-row">
+  <h1>TekstWijzer</h1>
+  <div class="brand-school">
+    <img src="pwa-logo.png" alt="Logo Prins Willem-Alexanderschool">
+    <div class="brand-credit"><strong>Asen Andonov</strong><br>Prins Willem-Alexanderschool</div>
+  </div>
+</div>
+<div class="dev-notice"><strong>Let op: TekstWijzer is nog in ontwikkeling.</strong> De tool wordt verder getest, aangevuld en verbeterd. Uitkomsten en lesadviezen zijn bedoeld als praktische ondersteuning voor de leerkracht en vragen altijd om een professionele afweging.</div>
 <div class="public-intro">
   <p class="tool-tagline">Analyseer tekstcomplexiteit en vertaal de uitkomst naar passend leesonderwijs.</p>
   <p class="source-line"><em>Gebaseerd op de kwalitatieve analysecriteria uit <span style="font-style:italic">Close Reading</span> (Uitgeverij Pica, 2018) en de blokplanning Leesonderwijs van de PWA.</em></p>
