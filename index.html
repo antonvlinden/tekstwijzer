@@ -186,6 +186,61 @@ button{font:inherit}.type,.choice,.primary,.secondary{border-radius:14px;border:
 
 .dev-notice{margin:14px 0 20px;padding:11px 14px;border:1px solid #e2c56b;border-radius:10px;background:#fff9e6;font-size:13px;line-height:1.45}
 .dev-notice strong{font-weight:700}
+
+/* v29: duidelijke scheiding tussen hoofdrubrieken */
+#result, #lessonPrep{
+  margin-top:32px;
+  border-top:4px solid var(--ink);
+  padding-top:26px;
+}
+#result h2, #lessonPrep h2{margin-top:0}
+details.sources-box{
+  margin-top:30px;
+  border-top:2px solid var(--line);
+  padding-top:16px;
+}
+details.sources-box summary{
+  cursor:pointer;
+  font-weight:700;
+  font-size:15px;
+}
+
+details.block-goals-box{margin-top:22px;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:#fafafa}
+details.block-goals-box summary{cursor:pointer;font-weight:700}
+.route-grid{display:grid;gap:12px;margin-top:16px}
+.route-compact{border:1px solid var(--line);border-left-width:5px;border-radius:10px;padding:13px 15px;background:#fff}
+.route-compact.support{border-left-color:#c58a17}
+.route-compact.base{border-left-color:#3c78a8}
+.route-compact.challenge{border-left-color:#7a5aa6}
+.route-compact strong{display:block;margin-bottom:3px}
+.route-method{display:block;font-weight:650;margin-bottom:7px}
+.route-compact p{margin:0 0 7px}
+.route-compact small{color:var(--muted);line-height:1.4}
+.evidence-note{margin-top:14px}
+.focus-goals-box{margin-top:24px}
+.advicebox{margin-top:26px;padding-top:22px;border-top:2px solid var(--line)}
+.profile{margin-top:28px;padding-top:22px;border-top:2px solid var(--line)}
+
+.mini-help{
+ display:inline-flex;align-items:center;justify-content:center;
+ width:20px;height:20px;border-radius:50%;border:1px solid var(--line);
+ background:#fff;color:var(--ink);font-size:12px;font-weight:800;
+ cursor:pointer;padding:0;margin-left:4px;vertical-align:middle;
+}
+.inline-help{
+ display:inline-block;margin:5px 6px 5px 3px;padding:8px 10px;
+ border:1px solid var(--line);border-radius:8px;background:#f7f8fa;
+ font-size:13px;line-height:1.4;
+}
+.route-bank{border:1px solid var(--line);border-left-width:5px;border-radius:12px;padding:15px;background:#fff}
+.route-bank.support{border-left-color:#c58a17}
+.route-bank.base{border-left-color:#3c78a8}
+.route-bank.challenge{border-left-color:#7a5aa6}
+.route-head p{margin:3px 0 10px;color:var(--muted);font-size:13px}
+.activity-bank{display:grid;gap:7px}
+.activity-option{border-top:1px solid var(--line);padding-top:7px}
+.activity-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;background:transparent;border:0;padding:4px 0;cursor:pointer;font:inherit;font-weight:650;color:var(--ink)}
+.activity-detail{padding:7px 0 4px;color:var(--muted);font-size:13px;line-height:1.45}
 </style>
 </head>
 <body><main class="wrap">
@@ -197,7 +252,7 @@ button{font:inherit}.type,.choice,.primary,.secondary{border-radius:14px;border:
     <div class="brand-credit"><strong>Asen Andonov</strong><br>Prins Willem-Alexanderschool</div>
   </div>
 </div>
-<div class="dev-notice"><strong>Let op: TekstWijzer is nog in ontwikkeling.</strong> De tool wordt verder getest, aangevuld en verbeterd. Uitkomsten en lesadviezen zijn bedoeld als praktische ondersteuning voor de leerkracht en vragen altijd om een professionele afweging.</div>
+<div class="dev-notice"><strong>TekstWijzer is in ontwikkeling.</strong> Gebruik de uitkomsten als ondersteuning bij je professionele afweging.</div>
 <div class="public-intro">
   <p class="tool-tagline">Analyseer tekstcomplexiteit en vertaal de uitkomst naar passend leesonderwijs.</p>
   <p class="source-line"><em>Gebaseerd op de kwalitatieve analysecriteria uit <span style="font-style:italic">Close Reading</span> (Uitgeverij Pica, 2018) en de blokplanning Leesonderwijs van de PWA.</em></p>
@@ -250,14 +305,13 @@ button{font:inherit}.type,.choice,.primary,.secondary{border-radius:14px;border:
   <div id="profileSummary" class="profile-summary"></div>
 
 <div class="advicebox">
-<h3>Advies op basis van de analyse</h3>
-<div class="advice-toolbar no-print"><button id="shortAdvice" type="button">Kort advies</button><button id="longAdvice" type="button" class="active">Uitgebreid advies</button></div>
+<h3>Wat kun je didactisch doen?</h3>
 <div id="teacherAdvice"></div>
-<div id="lessonPlan" class="close-reading-plan"></div><div class="group-goals block-goals-box">
-<h3 id="groupGoalsTitle">Doelen uit de blokplanning</h3>
+<details class="group-goals block-goals-box">
+<summary id="groupGoalsTitle">Bekijk alle doelen uit de blokplanning</summary>
 <div id="groupGoals"></div>
-<p class="source-links">Bron doelen: <strong>Blokplanning Leesonderwijs, blok sep–dec, groep 4 t/m 8</strong> (door de gebruiker aangeleverd). De tool verandert deze doelen niet; hij selecteert alleen welke doelen het beste aansluiten bij de uitkomst van de tekstanalyse.</p>
-</div>
+<p class="source-links">Bron doelen: <strong>Blokplanning Leesonderwijs, blok sep–dec, groep 4 t/m 8</strong> (door de gebruiker aangeleverd). TekstWijzer selecteert alleen doelen die aansluiten bij de analyse.</p>
+</details>
 <div class="source-links">Deze tips passen bij de onderdelen die in jouw analyse het moeilijkst zijn. Kies wat bij jouw tekst en groep past.</div>
 </div>
   <p class="profile-note">De onderdelen staan van moeilijkst naar makkelijkst. Hoe langer de balk, hoe meer dit onderdeel bijdraagt aan de complexiteit van de tekst.</p>
@@ -269,25 +323,9 @@ button{font:inherit}.type,.choice,.primary,.secondary{border-radius:14px;border:
 <div class="actions no-print"><button id="restart" class="secondary">Opnieuw beginnen</button><button id="saveAnalysis" class="secondary" type="button">Analyse opslaan</button><button onclick="window.print()" class="primary">Resultaat afdrukken / PDF</button></div>
 </section>
 
-<div id="lessonPrep" class="lesson-prep hidden">
-  <h3>Maak mijn lesvoorbereiding</h3>
-  <p class="muted">De tool stelt doelen voor op basis van de analyse. Jij kiest welke doelen je echt wilt gebruiken.</p>
-  <div id="selectableGoals"></div>
-  <div id="generatedLessonGoal"></div>
-  <div id="differentiation"></div>
-  <label for="teacherNotes"><strong>Notities voor mijn les</strong></label>
-  <textarea id="teacherNotes" placeholder="Bijvoorbeeld: moeilijke woorden vooraf bespreken, pagina 2 samen lezen, extra ondersteuning voor..."></textarea>
-  <div class="lesson-card-actions">
-    <button type="button" id="makeLessonCard">Lesvoorbereiding bijwerken</button>
-    <button type="button" id="printLessonCardBtn">Leskaart afdrukken / PDF</button>
-  </div>
-</div>
-<div id="printLessonCard"></div>
 
-<footer class="public-footer">
-  <strong>Bronnen en toelichting</strong><br>
-  TekstWijzer is een onafhankelijke praktische uitwerking voor onderwijsgebruik. De kwalitatieve beoordeling van tekstcomplexiteit is gebaseerd op analysecriteria uit <em>Close Reading. Werken aan dieper tekstbegrip in het basisonderwijs</em> (Uitgeverij Pica, 2018). De gebruikte numerieke score, gemiddelde score, grenswaarden, signaleringen en gegenereerde lesadviezen zijn praktische keuzes binnen TekstWijzer en maken geen deel uit van het oorspronkelijke analyseformulier. De koppeling aan onderwijsdoelen is gebaseerd op de blokplanning Leesonderwijs van de PWA. TekstWijzer is geen officiële tool van Uitgeverij Pica. De activiteitenbank gebruikt daarnaast evidence-informed leesstrategieën uit onder meer de IES/What Works Clearinghouse Practice Guide <em>Providing Reading Interventions for Students in Grades 4–9</em>, onderzoek naar Reciprocal Teaching (Palincsar &amp; Brown, 1984) en praktische differentiatievormen zoals tiered assignments en choice boards. De concrete Nederlandse uitvoeringsbeschrijvingen zijn door TekstWijzer geformuleerd.
-</footer>
+<footer><details class="sources-box"><summary>Bronnen &amp; verantwoording</summary><strong>Bronnen en toelichting</strong><br>
+  TekstWijzer is een onafhankelijke praktische uitwerking voor onderwijsgebruik. De kwalitatieve beoordeling van tekstcomplexiteit is gebaseerd op analysecriteria uit <em>Close Reading. Werken aan dieper tekstbegrip in het basisonderwijs</em> (Uitgeverij Pica, 2018). De gebruikte numerieke score, gemiddelde score, grenswaarden, signaleringen en gegenereerde lesadviezen zijn praktische keuzes binnen TekstWijzer en maken geen deel uit van het oorspronkelijke analyseformulier. De koppeling aan onderwijsdoelen is gebaseerd op de blokplanning Leesonderwijs van de PWA. TekstWijzer is geen officiële tool van Uitgeverij Pica. De didactische aanpakken gebruiken evidence-informed leesstrategieën uit onder meer de IES/What Works Clearinghouse Practice Guide <em>Providing Reading Interventions for Students in Grades 4–9</em>, onderzoek naar Reciprocal Teaching (Palincsar &amp; Brown, 1984) . De concrete Nederlandse uitvoeringsbeschrijvingen zijn praktische uitwerkingen van TekstWijzer en zijn niet ieder afzonderlijk als interventie onderzocht.</details></footer>
 
 </main>
 <script>
@@ -343,7 +381,7 @@ function showResult(){
  if(avg<=1.66){level="Gemakkelijke tekst";cls="easy";explain="De meeste kenmerken van deze tekst vallen aan de gemakkelijke kant van het profiel."}
  else if(avg<=2.33){level="Gemiddelde tekst";cls="mid";explain="De tekst heeft een gemengd complexiteitsprofiel. Bekijk hieronder welke onderdelen extra leesinspanning vragen."}
  else{level="Moeilijke tekst";cls="hard";explain="Meerdere kenmerken dragen sterk bij aan de complexiteit. Bekijk hieronder waar de grootste leesuitdagingen zitten."}
- $("quiz").classList.add("hidden");$("result").style.display="block";$("lessonPrep").classList.remove("hidden");$("total").textContent=avg.toFixed(2).replace(".",",");
+ $("quiz").classList.add("hidden");$("result").style.display="block";$("total").textContent=avg.toFixed(2).replace(".",",");
  $("scaleMarker").style.left=((avg-1)/2*100)+"%";
  $("resultType").textContent=type==="info"?"Informatieve tekst":"Verhalende tekst";
  const title=$("textTitle").value.trim(), author=$("author").value.trim();
@@ -358,7 +396,7 @@ function showResult(){
  if(top.length===1) topText=top[0];
  else if(top.length===2) topText=top[0]+" en "+top[1];
  else topText=top.slice(0,-1).join(", ")+" en "+top[top.length-1];
- $("profileSummary").innerHTML=`<strong>Samenvatting:</strong> De grootste bijdrage aan de complexiteit komt van <strong>${topText}</strong> (${highest}/3). ${highest===3?"Deze onderdelen vragen waarschijnlijk de meeste leesinspanning van de leerlingen.":highest===2?"Geen onderdeel is als moeilijk beoordeeld; deze onderdelen vragen relatief de meeste aandacht.":"Alle onderdelen zijn als gemakkelijk beoordeeld."}`;
+ $("profileSummary").innerHTML=`<strong>Samenvatting:</strong> De grootste bijdrage aan de complexiteit komt van <strong>${topText}</strong>. ${highest===3?"Deze onderdelen vragen waarschijnlijk de meeste leesinspanning van de leerlingen.":highest===2?"Geen onderdeel is als moeilijk beoordeeld; deze onderdelen vragen relatief de meeste aandacht.":"Alle onderdelen zijn als gemakkelijk beoordeeld."}`;
  $("profileRows").innerHTML=ranked.map(x=>{
    const v=x.score, c=["","easy","mid","hard"][v], label=["","Gemakkelijk","Gemiddeld","Moeilijk"][v];
    return `<div class="profile-row"><div class="profile-label">${x.name}<button type="button" class="profile-help no-print" data-help="${x.order}" aria-label="Betekenis van ${x.name}">?</button></div><div class="track"><div class="fill ${c}"></div></div><div class="profile-value">${v}/3 · ${label}</div></div><div id="profileHelp${x.order}" class="profile-explain hidden">${helpText[type][x.order]}</div>`;
@@ -368,7 +406,7 @@ function showResult(){
  }));
  renderTeacherAdvice();
 }
-$("restart").onclick=()=>{type=null;step=0;answers=Array(8).fill(null);$("result").style.display="none";$("lessonPrep").classList.add("hidden");$("printLessonCard").innerHTML="";$("start").classList.remove("hidden");$("metaForm").classList.add("hidden");$("textTitle").value="";$("author").value="";document.querySelectorAll(".type").forEach(x=>x.classList.remove("active"))};
+$("restart").onclick=()=>{type=null;step=0;answers=Array(8).fill(null);$("result").style.display="none";$("start").classList.remove("hidden");$("metaForm").classList.add("hidden");$("textTitle").value="";$("author").value="";document.querySelectorAll(".type").forEach(x=>x.classList.remove("active"))};
 
 const helpText={
  info:[
@@ -476,7 +514,7 @@ function renderGroupGoals(chosen=[]){
  const g=$("groupSelect")?$("groupSelect").value:"5";
  const goals=gradeGoals[g]||gradeGoals["5"];
  const tech=technicalReadingGoals[g]||[];
- $("groupGoalsTitle").textContent=`Doelen uit de blokplanning – groep ${g}`;
+ $("groupGoalsTitle").textContent=`Bekijk alle doelen uit de blokplanning – groep ${g}`;
  $("groupGoals").innerHTML=`<p><strong>Begrijpend lezen</strong></p><ul>${goals.map(x=>`<li>${x}</li>`).join("")}</ul>
  <p><strong>Technisch lezen</strong></p><ul>${tech.map(x=>`<li>${x}</li>`).join("")}</ul>`;
  let ids=[];
@@ -592,29 +630,51 @@ function renderProfileAlert(){
 }
 let adviceMode="long";
 function renderTeacherAdvice(){
- renderProfileAlert();
- const ranked=data[type].map((x,i)=>({name:x.name,score:answers[i]})).sort((a,b)=>b.score-a.score);
- const hard=ranked.filter(x=>x.score===3);
- const chosen=hard.length?hard:ranked.filter(x=>x.score===2).slice(0,3);
+ const aspects=data[type]||[];
+ const scored=aspects.map((a,i)=>({name:a.name,score:answers[i]||0})).sort((a,b)=>b.score-a.score);
+ const hard=scored.filter(x=>x.score===3), mid=scored.filter(x=>x.score===2);
+ const chosen=hard.length?hard:mid.slice(0,3);
  renderGroupGoals(chosen);
- const intro=hard.length?"Deze onderdelen maken de tekst het lastigst. Hierbij passen de volgende tips:":chosen.length?"Deze onderdelen kunnen wat extra aandacht gebruiken:":"De tekst scoort op alle onderdelen gemakkelijk. Extra ondersteuning lijkt op basis van deze analyse niet nodig.";
- let html=intro;
- if(!chosen.length){
-   html+=`<div class="session-card"><strong>Wil je meer uitdaging?</strong>Laat leerlingen bijvoorbeeld een diepere afleiding maken, twee tekstgedeelten met elkaar verbinden, de bedoeling van de schrijver onderzoeken, een eigen vraag met tekstbewijs maken of de tekst vergelijken met een tweede tekst.</div>`;
- }
- if(chosen.length){
-   html+="<ul>"+chosen.map(x=>{
-     let txt=adviceMap[x.name]||"";
-     if(adviceMode==="short"){
-       txt=txt.replace(/<br><br><strong>Ideeën voor activiteiten:<\/strong>[\s\S]*/,"");
-     }
-     return `<li><strong>${x.name}:</strong> ${txt}</li>`;
-   }).join("")+"</ul>";
- }
- $("teacherAdvice").innerHTML=html;
- renderLessonPlan(chosen);
- renderSelectableGoals(true);
- renderLessonPreparation();
+
+ const g=$("groupSelect")?.value||"5";
+ const goals=gradeGoals[g]||[];
+ let goalIds=[];
+ chosen.slice(0,3).forEach(x=>matchingGoalIndexes(g,x.name).forEach(i=>goalIds.push(i)));
+ goalIds=[...new Set(goalIds)].slice(0,3);
+ const focusGoal=goalIds.length?goals[goalIds[0]]:(goals[0]||"begrijpend lezen");
+ const focusText=chosen.length?chosen.slice(0,3).map(x=>{
+   const def=(helpText[type]&&helpText[type][x.name])||"Dit onderdeel van de tekstanalyse.";
+   return `${x.name} <button type="button" class="mini-help" aria-label="Uitleg ${x.name}" onclick="this.nextElementSibling.hidden=!this.nextElementSibling.hidden">?</button><span class="inline-help" hidden>${def}</span>`;
+ }).join(", "):"geen duidelijke extra moeilijkheidsbron";
+
+ const routes=[
+   {level:"support",label:"Instructiegevoelige groep",desc:"Meer ondersteuning, voordoen en kleinere stappen."},
+   {level:"base",label:"Basisgroep",desc:"Zelfstandig of samen verwerken met gerichte tekstvragen."},
+   {level:"challenge",label:"Uitdaging",desc:"Verdiepen, combineren, verklaren en onderbouwen."}
+ ];
+
+ const ranked=[...activityBank].map(x=>({...x,_score:scoreActivity(x)}))
+   .filter(x=>x._score>-999).sort((a,b)=>b._score-a._score);
+
+ const routeHtml=routes.map(r=>{
+   let acts=ranked.filter(x=>x.levels.includes(r.level)).slice(0,5);
+   if(!acts.length) return "";
+   const bank=acts.map((a,i)=>`<div class="activity-option">
+      <button type="button" class="activity-toggle" onclick="this.parentElement.classList.toggle('open');this.nextElementSibling.hidden=!this.nextElementSibling.hidden">
+        <span>${a.title}</span><span class="mini-help">?</span>
+      </button>
+      <div class="activity-detail" hidden>${a.how}</div>
+    </div>`).join("");
+   return `<div class="route-bank ${r.level}">
+     <div class="route-head"><div><strong>${r.label}</strong><p>${r.desc}</p></div></div>
+     <div class="activity-bank">${bank}</div>
+   </div>`;
+ }).join("");
+
+ $("teacherAdvice").innerHTML=`
+ <p><strong>Focusdoel:</strong> ${focusGoal}</p>
+ <p><strong>Aandachtspunten uit de tekstanalyse:</strong> ${focusText}.</p>
+ <div class="route-grid">${routeHtml}</div>`;
 }
 function renderLessonPlan(chosen){
  const group=$("groupSelect")?$("groupSelect").value:"5";
@@ -836,7 +896,7 @@ function buildPrintableLessonCard(){
  const aspects=currentChosenAspects().slice(0,3);
  const notes=$("teacherNotes")?.value||"";
  $("printLessonCard").innerHTML=`<div><h1>Lesvoorbereiding</h1><p><strong>Tekst:</strong> ${title}${author?` – ${author}`:""}<br><strong>Groep:</strong> ${g}<br><strong>Lesdoel van gebruik:</strong> ${purpose}</p>
- <h2>Uit de tekstanalyse</h2><p>${aspects.length?`Belangrijkste aandachtspunten: <strong>${aspects.map(x=>`${x.name} (${x.score}/3)`).join(", ")}</strong>.`:"De tekst scoort op alle onderdelen als gemakkelijk."}</p>
+ <h2>Uit de tekstanalyse</h2><p>${aspects.length?`Belangrijkste aandachtspunten: <strong>${aspects.map(x=>`${x.name}`).join(", ")}</strong>.`:"De tekst scoort op alle onderdelen als gemakkelijk."}</p>
  <h2>Focusdoelen uit de blokplanning</h2>${selected.length?`<ul>${selected.map(x=>`<li>${x}</li>`).join("")}</ul>`:"<p>Geen focusdoel geselecteerd.</p>"}
  <h2>Lesdoel</h2><p><strong>${info.goal}</strong></p>
  <h2>Succescriteria</h2><ul>${info.criteria.map(x=>`<li>${x}</li>`).join("")}</ul>
@@ -845,7 +905,7 @@ function buildPrintableLessonCard(){
  ${notes?`<h2>Notities voor mijn les</h2><p>${notes.replace(/\n/g,"<br>")}</p>`:""}</div>`;
 }
 function saveAnalysis(){
- const payload={version:25,type,title:$("textTitle").value.trim(),author:$("author").value.trim(),answers,score:answers.reduce((a,b)=>a+b,0)/answers.length,group:$("groupSelect")?$("groupSelect").value:"5",lessonPurpose:$("lessonPurpose")?$("lessonPurpose").value:"close",savedAt:new Date().toISOString()};
+ const payload={version:31,type,title:$("textTitle").value.trim(),author:$("author").value.trim(),answers,score:answers.reduce((a,b)=>a+b,0)/answers.length,group:$("groupSelect")?$("groupSelect").value:"5",lessonPurpose:$("lessonPurpose")?$("lessonPurpose").value:"close",savedAt:new Date().toISOString()};
  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
  const a=document.createElement("a");a.href=URL.createObjectURL(blob);
  a.download=(payload.title||"tekstanalyse").replace(/[^\w\-]+/g,"_")+".json";a.click();URL.revokeObjectURL(a.href);
@@ -862,21 +922,7 @@ $("loadAnalysis").addEventListener("change",async e=>{
  e.target.value="";
 });
 
-if($("shortAdvice")) $("shortAdvice").addEventListener("click",()=>{adviceMode="short";$("shortAdvice").classList.add("active");$("longAdvice").classList.remove("active");renderTeacherAdvice();});
-if($("longAdvice")) $("longAdvice").addEventListener("click",()=>{adviceMode="long";$("longAdvice").classList.add("active");$("shortAdvice").classList.remove("active");renderTeacherAdvice();});
 if($("groupSelect")) $("groupSelect").addEventListener("change",()=>{if(!$("result").classList.contains("hidden"))renderTeacherAdvice();});
 if($("lessonPurpose")) $("lessonPurpose").addEventListener("change",()=>{if(!$("result").classList.contains("hidden"))renderTeacherAdvice();});
 
-window.addEventListener("afterprint",()=>document.body.classList.remove("lesson-card-print"));
-document.addEventListener("DOMContentLoaded",()=>{
- const make=$("makeLessonCard"), print=$("printLessonCardBtn"), notes=$("teacherNotes");
- if(make) make.addEventListener("click",()=>{renderLessonPreparation();});
- if(print) print.addEventListener("click",()=>{
-   buildPrintableLessonCard();
-   document.body.classList.add("lesson-card-print");
-   window.print();
-   setTimeout(()=>document.body.classList.remove("lesson-card-print"),300);
- });
- if(notes) notes.addEventListener("input",buildPrintableLessonCard);
-});
 </script></body></html>
