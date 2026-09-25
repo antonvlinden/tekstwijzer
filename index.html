@@ -221,24 +221,13 @@ details.block-goals-box summary{cursor:pointer;font-weight:700}
 .advicebox{margin-top:26px;padding-top:22px;border-top:2px solid var(--line)}
 .profile{margin-top:28px;padding-top:22px;border-top:2px solid var(--line)}
 
-.mini-help{
- display:inline-flex;align-items:center;justify-content:center;
- width:20px;height:20px;border-radius:50%;border:1px solid var(--line);
- background:#fff;color:var(--ink);font-size:12px;font-weight:800;
- cursor:pointer;padding:0;margin-left:4px;vertical-align:middle;
-}
-.inline-help{
- display:inline-block;margin:5px 6px 5px 3px;padding:8px 10px;
- border:1px solid var(--line);border-radius:8px;background:#f7f8fa;
- font-size:13px;line-height:1.4;
-}
+.mini-help{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;border:1px solid var(--line);background:#fff;color:var(--ink);font-size:12px;font-weight:800;cursor:pointer;padding:0;margin-left:4px;vertical-align:middle}
+.inline-help{display:inline-block;margin:5px 6px 5px 3px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#f7f8fa;font-size:13px;line-height:1.4}
+.route-grid{display:grid;gap:14px;margin-top:14px}
 .route-bank{border:1px solid var(--line);border-left-width:5px;border-radius:12px;padding:15px;background:#fff}
-.route-bank.support{border-left-color:#c58a17}
-.route-bank.base{border-left-color:#3c78a8}
-.route-bank.challenge{border-left-color:#7a5aa6}
+.route-bank.support{border-left-color:#c58a17}.route-bank.base{border-left-color:#3c78a8}.route-bank.challenge{border-left-color:#7a5aa6}
 .route-head p{margin:3px 0 10px;color:var(--muted);font-size:13px}
-.activity-bank{display:grid;gap:7px}
-.activity-option{border-top:1px solid var(--line);padding-top:7px}
+.activity-bank{display:grid;gap:7px}.activity-option{border-top:1px solid var(--line);padding-top:7px}
 .activity-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;background:transparent;border:0;padding:4px 0;cursor:pointer;font:inherit;font-weight:650;color:var(--ink)}
 .activity-detail{padding:7px 0 4px;color:var(--muted);font-size:13px;line-height:1.45}
 </style>
@@ -629,6 +618,11 @@ function renderProfileAlert(){
  $("profileAlert").innerHTML=html;
 }
 let adviceMode="long";
+
+function aspectWithHelp(name){
+ const def=(helpText[type]&&helpText[type][name])||"Dit onderdeel van de tekstanalyse.";
+ return `<span class="summary-aspect"><strong>${name}</strong> <button type="button" class="mini-help" aria-label="Uitleg ${name}" onclick="this.nextElementSibling.hidden=!this.nextElementSibling.hidden">?</button><span class="inline-help" hidden>${def}</span></span>`;
+}
 function renderTeacherAdvice(){
  const aspects=data[type]||[];
  const scored=aspects.map((a,i)=>({name:a.name,score:answers[i]||0})).sort((a,b)=>b.score-a.score);
@@ -636,45 +630,23 @@ function renderTeacherAdvice(){
  const chosen=hard.length?hard:mid.slice(0,3);
  renderGroupGoals(chosen);
 
- const g=$("groupSelect")?.value||"5";
- const goals=gradeGoals[g]||[];
- let goalIds=[];
- chosen.slice(0,3).forEach(x=>matchingGoalIndexes(g,x.name).forEach(i=>goalIds.push(i)));
- goalIds=[...new Set(goalIds)].slice(0,3);
- const focusGoal=goalIds.length?goals[goalIds[0]]:(goals[0]||"begrijpend lezen");
- const focusText=chosen.length?chosen.slice(0,3).map(x=>{
-   const def=(helpText[type]&&helpText[type][x.name])||"Dit onderdeel van de tekstanalyse.";
-   return `${x.name} <button type="button" class="mini-help" aria-label="Uitleg ${x.name}" onclick="this.nextElementSibling.hidden=!this.nextElementSibling.hidden">?</button><span class="inline-help" hidden>${def}</span>`;
- }).join(", "):"geen duidelijke extra moeilijkheidsbron";
-
+ const ranked=[...activityBank].map(x=>({...x,_score:scoreActivity(x)}))
+   .filter(x=>x._score>-999).sort((a,b)=>b._score-a._score);
  const routes=[
    {level:"support",label:"Instructiegevoelige groep",desc:"Meer ondersteuning, voordoen en kleinere stappen."},
    {level:"base",label:"Basisgroep",desc:"Zelfstandig of samen verwerken met gerichte tekstvragen."},
    {level:"challenge",label:"Uitdaging",desc:"Verdiepen, combineren, verklaren en onderbouwen."}
  ];
-
- const ranked=[...activityBank].map(x=>({...x,_score:scoreActivity(x)}))
-   .filter(x=>x._score>-999).sort((a,b)=>b._score-a._score);
-
- const routeHtml=routes.map(r=>{
-   let acts=ranked.filter(x=>x.levels.includes(r.level)).slice(0,5);
-   if(!acts.length) return "";
-   const bank=acts.map((a,i)=>`<div class="activity-option">
-      <button type="button" class="activity-toggle" onclick="this.parentElement.classList.toggle('open');this.nextElementSibling.hidden=!this.nextElementSibling.hidden">
-        <span>${a.title}</span><span class="mini-help">?</span>
-      </button>
-      <div class="activity-detail" hidden>${a.how}</div>
-    </div>`).join("");
+ $("teacherAdvice").innerHTML=`<div class="route-grid">${routes.map(r=>{
+   const acts=ranked.filter(x=>x.levels.includes(r.level)).slice(0,5);
    return `<div class="route-bank ${r.level}">
-     <div class="route-head"><div><strong>${r.label}</strong><p>${r.desc}</p></div></div>
-     <div class="activity-bank">${bank}</div>
+     <div class="route-head"><strong>${r.label}</strong><p>${r.desc}</p></div>
+     <div class="activity-bank">${acts.map(a=>`<div class="activity-option">
+       <button type="button" class="activity-toggle" onclick="this.nextElementSibling.hidden=!this.nextElementSibling.hidden"><span>${a.title}</span><span class="mini-help">?</span></button>
+       <div class="activity-detail" hidden>${a.how}</div>
+     </div>`).join("")}</div>
    </div>`;
- }).join("");
-
- $("teacherAdvice").innerHTML=`
- <p><strong>Focusdoel:</strong> ${focusGoal}</p>
- <p><strong>Aandachtspunten uit de tekstanalyse:</strong> ${focusText}.</p>
- <div class="route-grid">${routeHtml}</div>`;
+ }).join("")}</div>`;
 }
 function renderLessonPlan(chosen){
  const group=$("groupSelect")?$("groupSelect").value:"5";
@@ -905,7 +877,7 @@ function buildPrintableLessonCard(){
  ${notes?`<h2>Notities voor mijn les</h2><p>${notes.replace(/\n/g,"<br>")}</p>`:""}</div>`;
 }
 function saveAnalysis(){
- const payload={version:31,type,title:$("textTitle").value.trim(),author:$("author").value.trim(),answers,score:answers.reduce((a,b)=>a+b,0)/answers.length,group:$("groupSelect")?$("groupSelect").value:"5",lessonPurpose:$("lessonPurpose")?$("lessonPurpose").value:"close",savedAt:new Date().toISOString()};
+ const payload={version:32,type,title:$("textTitle").value.trim(),author:$("author").value.trim(),answers,score:answers.reduce((a,b)=>a+b,0)/answers.length,group:$("groupSelect")?$("groupSelect").value:"5",lessonPurpose:$("lessonPurpose")?$("lessonPurpose").value:"close",savedAt:new Date().toISOString()};
  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
  const a=document.createElement("a");a.href=URL.createObjectURL(blob);
  a.download=(payload.title||"tekstanalyse").replace(/[^\w\-]+/g,"_")+".json";a.click();URL.revokeObjectURL(a.href);
